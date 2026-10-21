@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা ও সেন্ট্রাল এডমিন সিস্টেম</title>
+  <title>৩৯তম বার্ষিক ইজতেমা - ওয়াদা ট্র্যাকিং ও সেন্ট্রাল সিস্টেম</title>
   
   <!-- CDN Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -20,7 +20,7 @@
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     body { margin: 0; padding: 0; background-color: #0f172a; font-family: 'Tiro Bangla', 'Hind Siliguri', Arial, sans-serif; color: #0f172a; }
 
-    /* Top Control Bar */
+    /* Top Control Bar (Admin) */
     .controls-panel {
       background: #111827; color: #fff; padding: 10px 18px;
       display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
@@ -34,7 +34,6 @@
       background: linear-gradient(135deg, #f59e0b, #d97706);
       color: #fff; padding: 4px 10px; border-radius: 20px;
       font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;
-      box-shadow: 0 2px 6px rgba(217,119,6,0.4);
     }
 
     .view-tabs { display: inline-flex; background: #1f2937; padding: 3px; border-radius: 8px; border: 1px solid #374151; gap: 3px; }
@@ -53,6 +52,28 @@
 
     .halqa-dropdown { padding: 6px 10px; border-radius: 6px; border: 1px solid #4b5563; background: #1f2937; color: #fff; font-size: 12.5px; outline: none; }
 
+    /* Nigran Dedicated Navigation Bar */
+    .nigran-portal-nav {
+      display: none; background: #064e3b; color: #fff; padding: 12px 18px;
+      border-bottom: 2px solid #059669; position: sticky; top: 0; z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .nigran-nav-wrap {
+      max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap;
+      justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .nigran-id-badge {
+      display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: bold; color: #a7f3d0;
+    }
+    .nigran-tabs {
+      display: inline-flex; background: #022c22; padding: 3px; border-radius: 8px; border: 1px solid #047857; gap: 3px;
+    }
+    .nigran-tab-btn {
+      background: transparent; border: none; color: #a7f3d0; padding: 6px 12px;
+      border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .nigran-tab-btn.active { background: #10b981; color: #022c22; font-weight: bold; }
+
     /* Live KPI Bar */
     .live-kpi-bar {
       background: #030712; color: #d1d5db; padding: 8px 18px;
@@ -63,20 +84,33 @@
     .kpi-badge b { color: #38bdf8; }
     .kpi-badge.success b { color: #4ade80; }
     .kpi-badge.purple b { color: #c084fc; }
-    .kpi-badge.orange b { color: #fb923c; }
-
-    /* Nigran Mobile View Welcome Banner */
-    .nigran-welcome-banner {
-      display: none; background: #065f46; color: #fff; padding: 12px 20px;
-      text-align: center; font-size: 15px; font-weight: bold; border-bottom: 2px solid #34d399;
-    }
 
     /* Views */
     .workspace-view { display: none; }
     .workspace-view.active { display: block; }
 
-    /* Sheet Design */
-    .sheet-wrapper { padding: 24px 0 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    /* Multiple Phone Numbers Container (Ektar niche arekta) */
+    .phone-column-box {
+      display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center;
+    }
+    .phone-item-row {
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 6px;
+      background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;
+      width: 100%; max-width: 175px;
+    }
+    .phone-number-text {
+      font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; color: #0f172a;
+    }
+    .call-btn-mini {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #10b981; color: #fff; border-radius: 4px; padding: 2px 6px;
+      text-decoration: none; font-size: 10.5px; font-weight: bold; gap: 3px;
+      transition: background 0.15s;
+    }
+    .call-btn-mini:hover { background: #059669; }
+
+    /* Sheet Design (Desktop A4) */
+    .sheet-wrapper { padding: 20px 0 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
     .page {
       width: 210mm; height: 297mm; max-height: 297mm; padding: 0.5in;
       background: #ffffff !important; box-shadow: 0 8px 25px rgba(0,0,0,0.3);
@@ -99,19 +133,12 @@
 
     col.col-sl { width: 5.5%; }
     col.col-name { width: 33%; }
-    col.col-mobile { width: 23%; }
-    col.col-wada-open { width: 15.5%; }
-    col.col-wada-close { width: 15%; }
+    col.col-mobile { width: 25%; }
+    col.col-wada-open { width: 14.5%; }
+    col.col-wada-close { width: 14%; }
     col.col-remarks { width: 8%; }
 
     td.cell-name { text-align: left; padding-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13.5px; }
-    td.cell-mobile { text-align: center; font-family: Arial; font-size: 13.5px; white-space: nowrap; }
-
-    .call-btn-mini {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 20px; height: 20px; background: #e0f2fe; color: #0284c7; border-radius: 50%;
-      text-decoration: none; font-size: 11px; margin-left: 4px; vertical-align: middle;
-    }
 
     /* Interactive Tick Buttons */
     .tick-box-btn {
@@ -131,8 +158,52 @@
     .summary-card { border: 1px solid #000; width: 255px; padding: 4px 9px; font-size: 12px; line-height: 1.6; }
     .summary-card-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; }
 
+    /* Responsive Mobile Cards View (Mobile-Friendly Calling Hub) */
+    .mobile-cards-container {
+      display: none; padding: 12px; max-width: 650px; margin: 0 auto 60px;
+    }
+    .member-mobile-card {
+      background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15); border-left: 5px solid #2563eb;
+    }
+    .member-mobile-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .member-mobile-name {
+      font-size: 16px; font-weight: bold; color: #0f172a;
+    }
+    .member-mobile-halka {
+      background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 11.5px; font-weight: bold;
+    }
+    .mobile-phone-group {
+      margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .mobile-phone-action-btn {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #ecfdf5; border: 1.5px solid #10b981; color: #065f46;
+      padding: 8px 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;
+    }
+    .mobile-wada-actions {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0;
+    }
+    .mobile-wada-block {
+      text-align: center;
+    }
+    .mobile-wada-title {
+      font-size: 11.5px; font-weight: bold; color: #475569; margin-bottom: 4px;
+    }
+    .mobile-btn-toggle-group {
+      display: flex; gap: 4px; justify-content: center;
+    }
+    .mobile-touch-btn {
+      flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff;
+      font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 3px;
+    }
+    .mobile-touch-btn.active-yes { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .mobile-touch-btn.active-no { background: #dc2626; color: #fff; border-color: #dc2626; }
+
     /* Tables in Other Tabs */
-    .panel-container { max-width: 1100px; margin: 25px auto; background: #fff; padding: 25px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .panel-container { max-width: 1100px; margin: 20px auto; background: #fff; padding: 20px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .custom-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
     .custom-table th { background: #1e3a8a; color: #fff; padding: 9px 10px; font-size: 13.5px; border: 1px solid #1e3a8a; text-align: left; }
     .custom-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 13.5px; }
@@ -150,10 +221,7 @@
     .modal-card { background: #fff; border-radius: 12px; width: 480px; max-width: 90%; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #374151; }
-    .form-group input {
-      width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none;
-    }
-    .form-group input:focus { border-color: #2563eb; }
+    .form-group input { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; }
 
     /* Progress Overlay */
     .progress-overlay {
@@ -164,40 +232,47 @@
     .progress-bar-bg { width: 100%; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 12px 0 8px; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); }
 
+    /* ================= Responsive Breakpoints ================= */
+    @media (max-width: 768px) {
+      .sheet-wrapper { display: none !important; } /* মোবাইলে অপ্রয়োজনীয় বড় A4 শিট লুকিয়ে স্মার্ট কার্ড দেখাবে */
+      .mobile-cards-container { display: block !important; }
+      .controls-panel { padding: 8px 12px; gap: 8px; }
+      .brand-title { font-size: 14px; }
+      .view-tabs { width: 100%; overflow-x: auto; justify-content: flex-start; }
+      .tab-btn { font-size: 11.5px; padding: 5px 8px; white-space: nowrap; }
+      .panel-container { margin: 10px; padding: 14px; overflow-x: auto; }
+      .custom-table { font-size: 12px; }
+      .custom-table th, .custom-table td { padding: 6px 8px; }
+      .live-kpi-bar { padding: 8px 12px; font-size: 11.5px; }
+      .nigran-nav-wrap { flex-direction: column; align-items: flex-start; }
+      .nigran-tabs { width: 100%; overflow-x: auto; }
+    }
+
     @media print {
       body { background: #fff !important; }
-      .controls-panel, .live-kpi-bar, .nigran-welcome-banner, .call-btn-mini { display: none !important; }
+      .controls-panel, .live-kpi-bar, .nigran-portal-nav, .mobile-cards-container { display: none !important; }
       .workspace-view { display: none !important; }
       #viewSheets.workspace-view { display: block !important; }
+      .sheet-wrapper { display: flex !important; padding: 0 !important; gap: 0 !important; }
       .page { box-shadow: none !important; margin: 0 !important; width: 100% !important; page-break-after: always !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Controls Panel (Admin View) -->
+  <!-- Top Controls Panel (Only Visible to Admin/Co-Admin) -->
   <div class="controls-panel" id="adminControls">
-    <div class="brand-title">
-      🕌 ইজতেমা সেন্ট্রাল সিস্টেম
-    </div>
-
-    <!-- Super Admin Badge -->
-    <div class="super-admin-badge">
-      👑 প্রধান এডমিন: মামুন ভাই
-    </div>
+    <div class="brand-title">🕌 ইজতেমা সেন্ট্রাল সিস্টেম</div>
+    <div class="super-admin-badge">👑 প্রধান এডমিন: মামুন ভাই</div>
 
     <div class="view-tabs">
       <button class="tab-btn active" id="tabBtnSheets" onclick="switchView('viewSheets')">📄 ওয়াদা সিট</button>
       <button class="tab-btn" id="tabBtnAdmins" onclick="switchView('viewAdmins')">🛡️ এডমিন ও কো-এডমিন হাব</button>
       <button class="tab-btn" id="tabBtnNigrans" onclick="switchView('viewNigrans')">👥 নিগরান ও হালকা ব্যবস্থাপনা</button>
-      <button class="tab-btn" id="tabBtnReport" onclick="switchView('viewReport')">📊 পূর্ণাঙ্গ ওভারভিউ</button>
+      <button class="tab-btn" id="tabBtnReport" onclick="switchView('viewReport')">📊 সার্বিক ওভারভিউ</button>
     </div>
 
-    <label class="btn btn-upload">
-      📁 .DBF ফাইল আপলোড
-      <input type="file" id="dbfFileInput" accept=".dbf">
-    </label>
-
+    <label class="btn btn-upload">📁 .DBF ফাইল আপলোড <input type="file" id="dbfFileInput" accept=".dbf"></label>
     <select id="halqaSelect" class="halqa-dropdown" onchange="filterHalqaView(this.value)">
       <option value="">সকল হালকা প্রদর্শন</option>
     </select>
@@ -208,25 +283,37 @@
     <button class="btn" style="background:#4b5563;" onclick="window.print()">🖨️ প্রিন্ট</button>
   </div>
 
-  <!-- Nigran Mobile View Welcome Banner -->
-  <div class="nigran-welcome-banner" id="nigranWelcomeBanner">
-    আসসালামু আলাইকুম, <span id="nigranWelcomeName">নিগরান ভাই</span>! আপনার দায়িত্বপ্রাপ্ত হালকার সদস্যদের তালিকা নিচে দেওয়া হলো।
+  <!-- Dedicated Nigran Mobile Top Portal (Shown Only in Nigran Mode) -->
+  <div class="nigran-portal-nav" id="nigranPortalNav">
+    <div class="nigran-nav-wrap">
+      <div class="nigran-id-badge">
+        <span>👤</span>
+        <span id="nigranBadgeTitle">নিগরান ভাইয়ের পোর্টাল</span>
+      </div>
+      <div class="nigran-tabs">
+        <button class="nigran-tab-btn active" id="nTabBtnList" onclick="switchNigranTab('list')">📱 সদস্য তালিকা ও ওয়াদা</button>
+        <button class="nigran-tab-btn" id="nTabBtnRep" onclick="switchNigranTab('rep')">📋 আমার হালকা রিপোর্ট</button>
+        <button class="nigran-tab-btn" id="nTabBtnOver" onclick="switchNigranTab('over')">🌐 সার্বিক অগ্রগতি (Overview)</button>
+      </div>
+    </div>
   </div>
 
   <!-- Live KPI Bar -->
   <div class="live-kpi-bar" id="liveKpiBar">
-    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-      <div class="kpi-badge"><span>মোট সদস্যঃ</span> <b id="kpiTotalMembers">০</b></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <div class="kpi-badge"><span>সদস্যঃ</span> <b id="kpiTotalMembers">০</b></div>
       <div class="kpi-badge success"><span>উদ্বোধনে (হ্যাঁ)ঃ</span> <b id="kpiOpenYes">০</b></div>
       <div class="kpi-badge purple"><span>সম্পূর্ণে (হ্যাঁ)ঃ</span> <b id="kpiCloseYes">০</b></div>
-      <div class="kpi-badge orange"><span>দায়িত্বপ্রাপ্ত নিগরানঃ</span> <b id="kpiNigranCount">০ জন</b></div>
     </div>
     <div id="fileStatusText" style="color: #4ade80;">Firebase Live Cloud সক্রিয় 🟢</div>
   </div>
 
-  <!-- ================= VIEW 1: SHEETS ================= -->
+  <!-- ================= VIEW 1: SHEETS & MOBILE CARDS ================= -->
   <div id="viewSheets" class="workspace-view active">
+    <!-- Desktop A4 Printable Sheets -->
     <div class="sheet-wrapper" id="sheetsContainer"></div>
+    <!-- Mobile-Optimized Calling View -->
+    <div class="mobile-cards-container" id="mobileCardsContainer"></div>
   </div>
 
   <!-- ================= VIEW 2: ADMIN & CO-ADMIN HUB ================= -->
@@ -235,23 +322,17 @@
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
           <h2 style="margin:0; color:#1e293b;">এডমিন ও কো-এডমিন হাব (সেন্ট্রাল নিয়ন্ত্রণ)</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">এখানে আপনি সহ যেকোনো ভাইকে কো-এডমিন হিসেবে যুক্ত করতে পারবেন, যারা পুরো সিস্টেম মনিটর ও পরিচালনা করতে পারবেন।</p>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">কো-এডমিন নিযুক্ত করুন, যারা সম্পূর্ণ সিস্টেম ওভারভিউ করতে পারবেন।</p>
         </div>
         <button class="btn btn-admin" onclick="openCoAdminModal()">➕ নতুন কো-এডমিন নিযুক্ত করুন</button>
       </div>
 
-      <!-- Super Admin Profile Card -->
-      <div style="margin: 18px 0; background: linear-gradient(to right, #fff7ed, #ffedd5); border-left: 5px solid #ea580c; padding: 16px 20px; border-radius: 8px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h3 style="margin:0 0 4px; color:#9a3412;">👑 প্রধান এডমিন (Super Admin): মামুন ভাই</h3>
-            <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব।</p>
-          </div>
-          <span style="background:#ea580c; color:#fff; font-size:11px; padding:4px 10px; border-radius:20px; font-weight:bold;">Active Master</span>
-        </div>
+      <div style="margin: 18px 0; background: #fff7ed; border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px;">
+        <h3 style="margin:0 0 4px; color:#9a3412;">👑 প্রধান এডমিন (Super Admin): মামুন ভাই</h3>
+        <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব।</p>
       </div>
 
-      <h4 style="margin:20px 0 10px; color:#334155;">নিযুক্ত কো-এডমিন তালিকা (Co-Admins):</h4>
+      <h4 style="margin:16px 0 8px; color:#334155;">নিযুক্ত কো-এডমিন তালিকা (Co-Admins):</h4>
       <table class="custom-table">
         <thead>
           <tr>
@@ -274,7 +355,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
           <h2 style="margin:0; color:#1e293b;">নিগরান ও হালকা ব্যবস্থাপনা</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরান ভাইয়ের নাম ও ফোন পরিবর্তন, হালকা পরিবর্তন বা ২-৩ টি হালকা নিযুক্তি করুন।</p>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরান ভাইয়ের নাম ও ফোন পরিবর্তন, হালকা রদবদল বা একাধিক হালকা বণ্টন করুন।</p>
         </div>
         <button class="btn btn-upload" onclick="openNigranModal()">➕ নতুন নিগরান যুক্ত করুন</button>
       </div>
@@ -300,8 +381,8 @@
     <div class="panel-container">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
-          <h2 style="margin:0; color:#1e293b;">৩৯তম বার্ষিক ইজতেমা - পূর্ণাঙ্গ সেন্ট্রাল ওভারভিউ</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">হালকা ভিত্তিক সদস্য সংখ্যা, উদ্বোধনী ও সমাপনী ওয়াদা পরিসংখ্যান</p>
+          <h2 style="margin:0; color:#1e293b;">৩৯তম বার্ষিক ইজতেমা - সার্বিক ওয়াদা ও উপস্থিতি ওভারভিউ</h2>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">সকল হালকাভিত্তিক সদস্য সংখ্যা, উদ্বোধনী ও সমাপনী ওয়াদার রিয়েলটাইম পরিসংখ্যান</p>
         </div>
       </div>
 
@@ -411,9 +492,14 @@
     let wadaStateMap = {};
     let globalHalqaPagesMap = {};
 
+    // URL ও Session Storage থেকে নিগরান যাচাই (রিফ্রেশ দিলেও যেন নিগরান মুডেই থাকে)
     const urlParams = new URLSearchParams(window.location.search);
-    const activeNid = urlParams.get('nid');
+    let activeNid = urlParams.get('nid') || sessionStorage.getItem('ijtema_active_nid');
+    if (urlParams.get('nid')) {
+      sessionStorage.setItem('ijtema_active_nid', urlParams.get('nid'));
+    }
 
+    // বাংলা সংখ্যা কনভার্টার
     function toBanglaNum(num) {
       if (num === undefined || num === null) return '০';
       const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
@@ -422,6 +508,67 @@
 
     function sanitizeFileName(name) { return name.replace(/[/\\?%*:|"<>]/g, '_').trim(); }
 
+    // বাংলা স্ট্রিং নিখুঁত ম্যাচিং
+    function normalizeBengali(str) {
+      if (!str) return '';
+      return String(str)
+        .normalize('NFC')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '')
+        .trim()
+        .toLowerCase();
+    }
+
+    function isHalkaMatched(halkaA, halkaB) {
+      const a = normalizeBengali(halkaA);
+      const b = normalizeBengali(halkaB);
+      if (!a || !b) return false;
+      return a === b || a.includes(b) || b.includes(a);
+    }
+
+    // একাধিক মোবাইল নাম্বার এক্সট্র্যাক্ট এবং প্রতিটি নাম্বারের জন্য আলাদা কল বাটন তৈরি
+    function formatPhonesHtml(rawPhone) {
+      if (!rawPhone) return '<span style="color:#94a3b8;">--</span>';
+      const str = String(rawPhone).trim();
+      // কমা, স্ল্যাশ, সেমিকোলন বা স্পেস দিয়ে বিভক্ত করা
+      const parts = str.split(/[,/;\n|]+/).map(p => p.trim()).filter(Boolean);
+      if (parts.length === 0) return '<span style="color:#94a3b8;">--</span>';
+
+      return `
+        <div class="phone-column-box">
+          ${parts.map(p => {
+            const cleanDigits = p.replace(/[^0-9+]/g, '');
+            const dialNum = cleanDigits.startsWith('+') ? cleanDigits : (cleanDigits.startsWith('88') ? ('+' + cleanDigits) : ('+88' + cleanDigits));
+            return `
+              <div class="phone-item-row">
+                <span class="phone-number-text">${p}</span>
+                <a href="tel:${dialNum}" class="call-btn-mini" title="কল করুন: ${p}">📞 কল</a>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // মোবাইল কার্ড ভিউতে একাধিক নাম্বারের জন্য ফুল উইডথ বাটন
+    function formatMobilePhoneButtons(rawPhone) {
+      if (!rawPhone) return '<div style="color:#94a3b8; font-size:12px;">কোনো মোবাইল নম্বর নেই</div>';
+      const str = String(rawPhone).trim();
+      const parts = str.split(/[,/;\n|]+/).map(p => p.trim()).filter(Boolean);
+      if (parts.length === 0) return '<div style="color:#94a3b8; font-size:12px;">কোনো মোবাইল নম্বর নেই</div>';
+
+      return parts.map(p => {
+        const cleanDigits = p.replace(/[^0-9+]/g, '');
+        const dialNum = cleanDigits.startsWith('+') ? cleanDigits : (cleanDigits.startsWith('88') ? ('+' + cleanDigits) : ('+88' + cleanDigits));
+        return `
+          <a href="tel:${dialNum}" class="mobile-phone-action-btn">
+            <span>📞 ${p}</span>
+            <span style="font-size:12px; background:#10b981; color:#fff; padding:2px 8px; border-radius:4px;">সরাসরি কল</span>
+          </a>
+        `;
+      }).join('');
+    }
+
+    // ট্যাব স্যুইচার (Admin)
     function switchView(viewId) {
       document.querySelectorAll('.workspace-view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -432,10 +579,28 @@
       if (viewId === 'viewReport') { document.getElementById('tabBtnReport').classList.add('active'); renderReportView(); }
     }
 
+    // নিগরান ট্যাব স্যুইচার (Nigran Mode)
+    function switchNigranTab(tabType) {
+      document.querySelectorAll('.nigran-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.workspace-view').forEach(v => v.classList.remove('active'));
+
+      if (tabType === 'list') {
+        document.getElementById('nTabBtnList').classList.add('active');
+        document.getElementById('viewSheets').classList.add('active');
+      } else if (tabType === 'rep') {
+        document.getElementById('nTabBtnRep').classList.add('active');
+        document.getElementById('viewReport').classList.add('active');
+        renderReportView(true); // শুধু নিজের হালকা রিপোর্ট
+      } else if (tabType === 'over') {
+        document.getElementById('nTabBtnOver').classList.add('active');
+        document.getElementById('viewReport').classList.add('active');
+        renderReportView(false); // সার্বিক ওভারভিউ
+      }
+    }
+
     function findNigranForHalqa(halqaName) {
       if (!halqaName) return null;
-      const cleanH = halqaName.trim().toLowerCase();
-      return nigranList.find(n => n.halkas && n.halkas.some(h => cleanH.includes(h.trim().toLowerCase()) || h.trim().toLowerCase().includes(cleanH)));
+      return nigranList.find(n => n.halkas && n.halkas.some(h => isHalkaMatched(halqaName, h)));
     }
 
     // ক্লাউড ডেটাবেজে হ্যাঁ/না টগল সেভ
@@ -482,7 +647,6 @@
       renderNigranTable();
       rebuildPagesFromData();
       renderReportView();
-      document.getElementById('kpiNigranCount').innerText = `${toBanglaNum(nigranList.length)} জন`;
     });
 
     db.ref('co_admins').on('value', (snapshot) => {
@@ -491,8 +655,11 @@
       renderCoAdminTable();
     });
 
+    // UI আপডেট (ডেস্কটপ টেবিল ও মোবাইল কার্ড উভয়ই সিঙ্ক হবে)
     function updateRowUI(recKey) {
       const state = wadaStateMap[recKey] || { open: null, close: null };
+
+      // ডেস্কটপ ভিউ বাটন
       const btnOpenYes = document.getElementById(`btn_${recKey}_open_yes`);
       const btnOpenNo = document.getElementById(`btn_${recKey}_open_no`);
       const btnCloseYes = document.getElementById(`btn_${recKey}_close_yes`);
@@ -510,6 +677,22 @@
         btnCloseNo.className = `tick-box-btn ${state.close === 'no' ? 'is-no-active' : ''}`;
         btnCloseNo.querySelector('.sq-mark').innerText = state.close === 'no' ? '✖' : '';
       }
+
+      // মোবাইল কার্ড ভিউ বাটন
+      const mOpenYes = document.getElementById(`m_btn_${recKey}_open_yes`);
+      const mOpenNo = document.getElementById(`m_btn_${recKey}_open_no`);
+      const mCloseYes = document.getElementById(`m_btn_${recKey}_close_yes`);
+      const mCloseNo = document.getElementById(`m_btn_${recKey}_close_no`);
+
+      if (mOpenYes && mOpenNo) {
+        mOpenYes.className = `mobile-touch-btn ${state.open === 'yes' ? 'active-yes' : ''}`;
+        mOpenNo.className = `mobile-touch-btn ${state.open === 'no' ? 'active-no' : ''}`;
+      }
+      if (mCloseYes && mCloseNo) {
+        mCloseYes.className = `mobile-touch-btn ${state.close === 'yes' ? 'active-yes' : ''}`;
+        mCloseNo.className = `mobile-touch-btn ${state.close === 'no' ? 'active-no' : ''}`;
+      }
+
       updatePageSummaryCards();
     }
 
@@ -547,19 +730,23 @@
       document.getElementById('kpiCloseYes').innerText = toBanglaNum(totalCloseYes);
     }
 
-    function renderPages(pagesToRender) {
+    // ডেস্কটপ ও মোবাইল উভয় ভিউ একসাথে রেন্ডার
+    function renderPages(pagesToRender, filteredRecords) {
       const container = document.getElementById('sheetsContainer');
+      const mobileContainer = document.getElementById('mobileCardsContainer');
       container.innerHTML = '';
+      mobileContainer.innerHTML = '';
       globalHalqaPagesMap = {};
       let globalPageIndex = 1;
 
+      // ১. ডেস্কটপ A4 সিট রেন্ডার
       pagesToRender.forEach((pageInfo) => {
         const pageData = [...pageInfo.data];
         while (pageData.length < ROWS_PER_PAGE) pageData.push({ name: '', mobile: '', halqa: '', _empty: true });
 
         const assignedNigran = findNigranForHalqa(pageInfo.halqaName);
         const nigranDisplayName = assignedNigran 
-          ? `${assignedNigran.name} (${assignedNigran.phone}) <a href="tel:${assignedNigran.phone}" class="call-btn-mini">📞</a>`
+          ? `${assignedNigran.name} (${assignedNigran.phone})`
           : '________________________';
 
         const pageEl = document.createElement('div');
@@ -571,13 +758,12 @@
           const sl = toBanglaNum((pageInfo.halqaPageIndex - 1) * ROWS_PER_PAGE + index + 1);
           const recKey = row._empty ? `empty_${pageInfo.halqaName}_${index}` : (row._recKey || `rec_${index}`);
           const st = wadaStateMap[recKey] || { open: null, close: null };
-          const callLink = (!row._empty && row.mobile) ? `<a href="tel:${row.mobile}" class="call-btn-mini">📞</a>` : '';
 
           rowsHtml += `
             <tr data-reckey="${recKey}">
               <td>${sl}</td>
               <td class="cell-name">${row.name || ''}</td>
-              <td class="cell-mobile">${row.mobile || ''} ${callLink}</td>
+              <td class="cell-mobile">${row._empty ? '' : formatPhonesHtml(row.mobile)}</td>
               <td>
                 ${row._empty ? '' : `
                   <div style="display:flex; justify-content:center; gap:4px;">
@@ -653,6 +839,54 @@
         globalPageIndex++;
       });
 
+      // ২. মোবাইল ফ্রেন্ডলি কার্ড রেন্ডার (স্মার্টফোনে নিগরানদের দ্রুত কল ও ওয়াদা দিতে)
+      (filteredRecords || rawRecordsData).forEach((row, idx) => {
+        const recKey = row._recKey || `rec_${idx}`;
+        const st = wadaStateMap[recKey] || { open: null, close: null };
+
+        const card = document.createElement('div');
+        card.className = 'member-mobile-card';
+        card.innerHTML = `
+          <div class="member-mobile-header">
+            <div>
+              <span style="font-size:12px; color:#64748b; font-weight:bold;">#${toBanglaNum(idx + 1)}</span>
+              <div class="member-mobile-name">${row.name || 'অজ্ঞাত সদস্য'}</div>
+            </div>
+            <span class="member-mobile-halka">${row.halqa || 'হালকা'}</span>
+          </div>
+
+          <div class="mobile-phone-group">
+            ${formatMobilePhoneButtons(row.mobile)}
+          </div>
+
+          <div class="mobile-wada-actions">
+            <div class="mobile-wada-block">
+              <div class="mobile-wada-title">উদ্বোধনী অনুষ্ঠান</div>
+              <div class="mobile-btn-toggle-group">
+                <button type="button" id="m_btn_${recKey}_open_yes" class="mobile-touch-btn ${st.open === 'yes' ? 'active-yes' : ''}" onclick="toggleWada('${recKey}', 'open', 'yes')">
+                  ✔ হ্যাঁ
+                </button>
+                <button type="button" id="m_btn_${recKey}_open_no" class="mobile-touch-btn ${st.open === 'no' ? 'active-no' : ''}" onclick="toggleWada('${recKey}', 'open', 'no')">
+                  ✖ না
+                </button>
+              </div>
+            </div>
+            <div class="mobile-wada-block">
+              <div class="mobile-wada-title">সম্পূর্ণ অনুষ্ঠান</div>
+              <div class="mobile-btn-toggle-group">
+                <button type="button" id="m_btn_${recKey}_close_yes" class="mobile-touch-btn ${st.close === 'yes' ? 'active-yes' : ''}" onclick="toggleWada('${recKey}', 'close', 'yes')">
+                  ✔ হ্যাঁ
+                </button>
+                <button type="button" id="m_btn_${recKey}_close_no" class="mobile-touch-btn ${st.close === 'no' ? 'active-no' : ''}" onclick="toggleWada('${recKey}', 'close', 'no')">
+                  ✖ না
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        mobileContainer.appendChild(card);
+      });
+
       updatePageSummaryCards();
       refreshLiveKPIs();
     }
@@ -678,9 +912,7 @@
           <td>${halkaChips || '<span style="color:#94a3b8;">হালকা নির্ধারিত হয়নি</span>'}</td>
           <td style="font-family:Arial;">${n.phone}</td>
           <td style="text-align:center;">
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
-              📲 লিঙ্ক পাঠান (WhatsApp)
-            </a>
+            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">📲 লিঙ্ক পাঠান (WhatsApp)</a>
           </td>
           <td style="text-align:center;">
             <button class="btn btn-upload" style="padding:3px 8px; font-size:11px;" onclick="editNigran('${n.id}')">✏️ এডিট</button>
@@ -699,7 +931,7 @@
       coAdminList.forEach((admin, idx) => {
         const adminLink = `${currentOrigin}`;
         const whatsappMsg = encodeURIComponent(
-          `আসসালামু আলাইকুম ${admin.name} ভাই,\nআপনাকে ৩৯তম বার্ষিক ইজতেমার কো-এডমিন (Co-Admin) হিসেবে যুক্ত করা হয়েছে। সেন্ট্রাল সিস্টেম ওভারভিউ ও পরিচালনার জন্য এই লিংকে প্রবেশ করুন:\n${adminLink}`
+          `আসসালামু আলাইকুম ${admin.name} ভাই,\nআপনাকে ৩৯তম বার্ষিক ইজতেমার কো-এডমিন (Co-Admin) হিসেবে যুক্ত করা হয়েছে। সেন্ট্রাল সিস্টেম পরিচালনার জন্য এই লিংকে প্রবেশ করুন:\n${adminLink}`
         );
         const waUrl = `https://wa.me/88${admin.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
 
@@ -710,9 +942,7 @@
           <td style="font-family:Arial;">${admin.phone}</td>
           <td><span style="background:#ffedd5; color:#c2410c; padding:3px 8px; border-radius:4px; font-size:12px; font-weight:bold;">কো-এডমিন (সম্পূর্ণ এক্সেস)</span></td>
           <td style="text-align:center;">
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
-              📲 লিঙ্ক পাঠান (WhatsApp)
-            </a>
+            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">📲 লিঙ্ক পাঠান (WhatsApp)</a>
           </td>
           <td style="text-align:center;">
             <button class="btn" style="background:#dc2626; padding:3px 8px; font-size:11px;" onclick="deleteCoAdmin('${admin.id}')">🗑️</button>
@@ -722,12 +952,20 @@
       });
     }
 
-    function renderReportView() {
+    // রিপোর্ট টেবিল রেন্ডার (শুধু নিজের হালকা নাকি সার্বিক ওভারভিউ)
+    function renderReportView(onlyMyHalqa = false) {
       const tbody = document.getElementById('detailedReportTableBody');
       tbody.innerHTML = '';
       const halqaGroups = {};
+
+      const currentNigran = activeNid ? nigranList.find(n => String(n.id) === String(activeNid)) : null;
+
       rawRecordsData.forEach((r, idx) => {
         const h = r.halqa || 'অনির্ধারিত';
+        if (onlyMyHalqa && currentNigran) {
+          const isMine = currentNigran.halkas && currentNigran.halkas.some(target => isHalkaMatched(h, target));
+          if (!isMine) return;
+        }
         if (!halqaGroups[h]) halqaGroups[h] = [];
         halqaGroups[h].push({ ...r, _recKey: `rec_${idx}` });
       });
@@ -768,7 +1006,7 @@
     }
 
     function editNigran(id) {
-      const n = nigranList.find(item => item.id == id);
+      const n = nigranList.find(item => String(item.id) === String(id));
       if (!n) return;
       document.getElementById('editNigranId').value = n.id;
       document.getElementById('nigranModalTitle').innerText = 'নিগরান তথ্য ও হালকা পরিবর্তন';
@@ -822,15 +1060,12 @@
     function saveCoAdminData() {
       const name = document.getElementById('inputCoAdminName').value.trim();
       const phone = document.getElementById('inputCoAdminPhone').value.trim();
-
       if (!name || !phone) {
         alert('কো-এডমিনের নাম ও ফোন নম্বর লিখুন!');
         return;
       }
-
       const id = 'admin_' + Date.now();
       const newAdmin = { id, name, phone, addedAt: new Date().toISOString() };
-
       db.ref('co_admins/' + id).set(newAdmin).then(() => {
         closeCoAdminModal();
         alert('কো-এডমিন সফলভাবে নিযুক্ত করা হয়েছে!');
@@ -908,33 +1143,27 @@
       });
     }
 
-    // ==============================================================
-    // স্মার্ট কলাম ডিটেকশন (ভ্যালু ও ডিজিট প্যাটার্ন যাচাইকরণ)
-    // ==============================================================
+    // স্মার্ট কলাম ডিটেকশন
     function smartDetectColumns(records) {
       if (!records || records.length === 0) return { nameKey: '', mobileKey: '', halqaKey: '' };
       const keys = Object.keys(records[0]);
 
-      // পিতার নাম ফিল্টার
       const isFather = (k) => /father|f_?name|fname|pita|baba|parent|gardian/i.test(k);
       const isHalqaField = (k) => /halq|halk|hlq|branch|majlis|shakha|হালকা/i.test(k);
       const isMobileNamed = (k) => /mob|cell|phone|contact|tel|phn|ফোন|মোবাইল/i.test(k);
 
-      // ১. হালকা কলাম শনাক্ত
       let halqaKey = keys.find(k => isHalqaField(k));
 
-      // ২. মোবাইল কলাম শনাক্তকরণ (সবচেয়ে নিখুঁত ডাটা ভ্যালিডেশন)
       const sample = records.slice(0, 50);
       let bestMobileCol = null;
       let maxMobileMatches = 0;
 
       keys.forEach(k => {
-        if (isFather(k)) return; // পিতার নাম কখনো মোবাইল হবে না
+        if (isFather(k)) return;
         let matches = 0;
         sample.forEach(r => {
           const val = String(r[k] || '').trim();
           const cleanDigits = val.replace(/[^0-9]/g, '');
-          // বাংলাদেশের মোবাইল নম্বর ০১৩-০১৯ অথবা ১০-১৩ ডিজিট
           if (/^01[3-9]\d{8}$/.test(cleanDigits) || (cleanDigits.length >= 10 && cleanDigits.length <= 13 && cleanDigits.startsWith('01'))) {
             matches += 3;
           } else if (cleanDigits.length >= 10 && cleanDigits.length <= 14) {
@@ -948,18 +1177,11 @@
       });
 
       let mobileKey = (maxMobileMatches >= 2) ? bestMobileCol : keys.find(k => isMobileNamed(k) && !isFather(k));
-
-      // ৩. সদস্যের নাম কলাম শনাক্তকরণ
       const isNameField = (k) => /name|member|sodosso|নাম/i.test(k) && !isFather(k) && !isHalqaField(k) && k !== mobileKey;
       let nameKey = keys.find(isNameField) || keys.find(k => !isFather(k) && !isHalqaField(k) && k !== mobileKey && /name/i.test(k));
 
-      if (!nameKey) {
-        nameKey = keys.find(k => k !== mobileKey && k !== halqaKey && !isFather(k)) || keys[0];
-      }
-
-      if (!mobileKey) {
-        mobileKey = keys.find(k => k !== nameKey && k !== halqaKey && !isFather(k)) || keys[1] || '';
-      }
+      if (!nameKey) nameKey = keys.find(k => k !== mobileKey && k !== halqaKey && !isFather(k)) || keys[0];
+      if (!mobileKey) mobileKey = keys.find(k => k !== nameKey && k !== halqaKey && !isFather(k)) || keys[1] || '';
 
       return { nameKey, mobileKey, halqaKey };
     }
@@ -1004,34 +1226,59 @@
       return records;
     }
 
+    // পেজ এবং কার্ড সমূহের রিকনস্ট্রাকশন
     function rebuildPagesFromData() {
       if (!rawRecordsData || rawRecordsData.length === 0) return;
 
       const groups = {};
+      const unknownList = [];
+      let filteredRecords = [];
+
+      // নিগরান মোড ভ্যালিডেশন
+      let currentNigran = null;
+      if (activeNid) {
+        currentNigran = nigranList.find(n => String(n.id) === String(activeNid));
+      }
+
+      if (currentNigran) {
+        // নিগরান মোড: এডমিন কন্ট্রোল সম্পূর্ণ হাইড, নিগরান পোর্টাল সক্রিয়
+        document.getElementById('adminControls').style.display = 'none';
+        document.getElementById('nigranPortalNav').style.display = 'block';
+        const halkasLabel = (currentNigran.halkas || []).join(', ');
+        document.getElementById('nigranBadgeTitle').innerText = `${currentNigran.name} (${halkasLabel})`;
+      } else {
+        // এডমিন মোড
+        document.getElementById('adminControls').style.display = 'flex';
+        document.getElementById('nigranPortalNav').style.display = 'none';
+      }
+
       rawRecordsData.forEach((rec, idx) => {
         const item = { ...rec, _recKey: `rec_${idx}` };
         const h = rec.halqa || 'অনির্ধারিত';
-        if (!groups[h]) groups[h] = [];
-        groups[h].push(item);
+
+        // নিগরান মোডে থাকলে শুধু নিজের হালকার রেকর্ড ফিল্টার হবে
+        if (currentNigran) {
+          const isMine = currentNigran.halkas && currentNigran.halkas.some(target => isHalkaMatched(h, target));
+          if (!isMine) return; // অন্যদের হালকা বাদ
+        }
+
+        filteredRecords.push(item);
+
+        if (!h || /^(unknown|অজানা|নাই|নেই|-|_)$/i.test(h)) {
+          unknownList.push(item);
+        } else {
+          if (!groups[h]) groups[h] = [];
+          groups[h].push(item);
+        }
       });
 
       let sortedHalqas = Object.keys(groups).sort();
-
-      // নিগরান মোড চেক (?nid=X)
-      if (activeNid) {
-        const currentNigran = nigranList.find(n => n.id == activeNid);
-        if (currentNigran) {
-          document.getElementById('adminControls').style.display = 'none';
-          const banner = document.getElementById('nigranWelcomeBanner');
-          banner.style.display = 'block';
-          const halkasName = (currentNigran.halkas || []).join(', ');
-          document.getElementById('nigranWelcomeName').innerText = `${currentNigran.name} (${halkasName})`;
-          sortedHalqas = sortedHalqas.filter(h => 
-            currentNigran.halkas && currentNigran.halkas.some(target => h.toLowerCase().includes(target.toLowerCase()))
-          );
-        }
+      if (unknownList.length > 0) {
+        groups['অনির্ধারিত (Unknown)'] = unknownList;
+        sortedHalqas.push('অনির্ধারিত (Unknown)');
       }
 
+      // ড্রপডাউন রিফ্রেশ
       const select = document.getElementById('halqaSelect');
       select.innerHTML = '<option value="">-- সকল হালকা প্রদর্শন --</option>';
       sortedHalqas.forEach(hName => {
@@ -1055,10 +1302,10 @@
         }
       });
 
-      renderPages(pagesToRender);
+      renderPages(pagesToRender, filteredRecords);
     }
 
-    // এডমিন ফাইল আপলোড হ্যান্ডলার (স্মার্ট ডিটেকশন সহ)
+    // এডমিন ফাইল আপলোড হ্যান্ডলার
     document.getElementById('dbfFileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1071,7 +1318,6 @@
             return;
           }
 
-          // স্মার্ট কলাম যাচাই
           const { nameKey, mobileKey, halqaKey } = smartDetectColumns(raw);
 
           rawRecordsData = raw.map(r => ({
@@ -1081,7 +1327,7 @@
           }));
 
           db.ref('members').set(rawRecordsData);
-          alert(`সফল! মোট ${rawRecordsData.length} জন সদস্যের সঠিক তথ্য ফায়ারবেসে সংরক্ষিত হয়েছে।\n(শনাক্তকৃত: নাম কলাম -> [${nameKey}], মোবাইল -> [${mobileKey}])`);
+          alert(`সফল! মোট ${rawRecordsData.length} জন সদস্যের সঠিক তথ্য ফায়ারবেসে সংরক্ষিত হয়েছে।\n(নাম কলাম: [${nameKey}], মোবাইল: [${mobileKey}])`);
         } catch (err) {
           console.error(err);
           alert('DBF ফাইল প্রসেস করতে সমস্যা হয়েছে!');
