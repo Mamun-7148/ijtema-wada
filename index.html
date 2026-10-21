@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা ও নিগরান সিস্টেম</title>
+  <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা ও সেন্ট্রাল এডমিন সিস্টেম</title>
   
-  <!-- CDN লাইব্রেরি সমূহ -->
+  <!-- CDN Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-  <!-- Google Firebase SDK (Compat Version - No NPM Needed) -->
+  <!-- Google Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -18,43 +18,52 @@
     @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Amiri:wght@700&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
 
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    body { margin: 0; padding: 0; background-color: #1e293b; font-family: 'Tiro Bangla', 'Hind Siliguri', Arial, sans-serif; color: #0f172a; }
+    body { margin: 0; padding: 0; background-color: #0f172a; font-family: 'Tiro Bangla', 'Hind Siliguri', Arial, sans-serif; color: #0f172a; }
 
     /* Top Control Bar */
     .controls-panel {
-      background: #0f172a; color: #fff; padding: 10px 18px;
+      background: #111827; color: #fff; padding: 10px 18px;
       display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
       position: sticky; top: 0; z-index: 1000;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.45); border-bottom: 1px solid #334155;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5); border-bottom: 1px solid #374151;
     }
 
     .brand-title { font-size: 15px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
 
-    .view-tabs { display: inline-flex; background: #1e293b; padding: 3px; border-radius: 8px; border: 1px solid #334155; gap: 3px; }
-    .tab-btn { background: transparent; border: none; color: #94a3b8; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .super-admin-badge {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff; padding: 4px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;
+      box-shadow: 0 2px 6px rgba(217,119,6,0.4);
+    }
+
+    .view-tabs { display: inline-flex; background: #1f2937; padding: 3px; border-radius: 8px; border: 1px solid #374151; gap: 3px; }
+    .tab-btn { background: transparent; border: none; color: #9ca3af; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
     .tab-btn.active { background: #2563eb; color: #fff; }
 
     input[type="file"] { display: none; }
     .btn { padding: 6.5px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; color: #fff; text-decoration: none; }
-    .btn:hover { opacity: 0.92; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
     .btn-upload { background: #2563eb; }
     .btn-zip { background: #7c3aed; }
     .btn-single-pdf { background: #059669; }
     .btn-all-pdf { background: #0284c7; }
-    .btn-whatsapp { background: #25d366; color: #fff; font-size: 12px; }
+    .btn-admin { background: #ea580c; }
+    .btn-whatsapp { background: #25d366; color: #fff; font-size: 12px; font-weight: 600; }
 
-    .halqa-dropdown { padding: 6px 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: #fff; font-size: 12.5px; outline: none; }
+    .halqa-dropdown { padding: 6px 10px; border-radius: 6px; border: 1px solid #4b5563; background: #1f2937; color: #fff; font-size: 12.5px; outline: none; }
 
     /* Live KPI Bar */
     .live-kpi-bar {
-      background: #0b1329; color: #cbd5e1; padding: 8px 18px;
+      background: #030712; color: #d1d5db; padding: 8px 18px;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #1e293b; font-size: 12.5px; gap: 12px;
+      border-bottom: 1px solid #1f2937; font-size: 12.5px; gap: 12px;
     }
-    .kpi-badge { background: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1px solid #334155; display: inline-flex; gap: 6px; }
+    .kpi-badge { background: #1f2937; padding: 4px 10px; border-radius: 6px; border: 1px solid #374151; display: inline-flex; gap: 6px; }
     .kpi-badge b { color: #38bdf8; }
     .kpi-badge.success b { color: #4ade80; }
     .kpi-badge.purple b { color: #c084fc; }
+    .kpi-badge.orange b { color: #fb923c; }
 
     /* Nigran Mobile View Welcome Banner */
     .nigran-welcome-banner {
@@ -123,10 +132,28 @@
     .summary-card-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; }
 
     /* Tables in Other Tabs */
-    .nigran-container, .report-container { max-width: 1100px; margin: 25px auto; background: #fff; padding: 25px 30px; border-radius: 12px; }
-    .nigran-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .nigran-table th { background: #1e3a8a; color: #fff; padding: 8px 10px; font-size: 13.5px; border: 1px solid #1e3a8a; text-align: left; }
-    .nigran-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 13.5px; }
+    .panel-container { max-width: 1100px; margin: 25px auto; background: #fff; padding: 25px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .custom-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .custom-table th { background: #1e3a8a; color: #fff; padding: 9px 10px; font-size: 13.5px; border: 1px solid #1e3a8a; text-align: left; }
+    .custom-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 13.5px; }
+
+    .halka-badge-tag {
+      background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px;
+      font-size: 12px; font-weight: 600; margin: 2px; display: inline-block;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(3px);
+    }
+    .modal-card { background: #fff; border-radius: 12px; width: 480px; max-width: 90%; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #374151; }
+    .form-group input {
+      width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none;
+    }
+    .form-group input:focus { border-color: #2563eb; }
 
     /* Progress Overlay */
     .progress-overlay {
@@ -150,12 +177,20 @@
 
   <!-- Top Controls Panel (Admin View) -->
   <div class="controls-panel" id="adminControls">
-    <div class="brand-title">🕌 ইজতেমা ওয়াদা ও নিগরান সিস্টেম</div>
+    <div class="brand-title">
+      🕌 ইজতেমা সেন্ট্রাল সিস্টেম
+    </div>
+
+    <!-- Super Admin Badge -->
+    <div class="super-admin-badge">
+      👑 প্রধান এডমিন: মামুন ভাই
+    </div>
 
     <div class="view-tabs">
       <button class="tab-btn active" id="tabBtnSheets" onclick="switchView('viewSheets')">📄 ওয়াদা সিট</button>
-      <button class="tab-btn" id="tabBtnNigrans" onclick="switchView('viewNigrans')">👥 নিগরান ট্র্যাকার ও হোয়াটসঅ্যাপ লিঙ্ক</button>
-      <button class="tab-btn" id="tabBtnReport" onclick="switchView('viewReport')">📊 পূর্ণাঙ্গ রিপোর্ট</button>
+      <button class="tab-btn" id="tabBtnAdmins" onclick="switchView('viewAdmins')">🛡️ এডমিন ও কো-এডমিন হাব</button>
+      <button class="tab-btn" id="tabBtnNigrans" onclick="switchView('viewNigrans')">👥 নিগরান ও হালকা ব্যবস্থাপনা</button>
+      <button class="tab-btn" id="tabBtnReport" onclick="switchView('viewReport')">📊 পূর্ণাঙ্গ ওভারভিউ</button>
     </div>
 
     <label class="btn btn-upload">
@@ -170,7 +205,7 @@
     <button class="btn btn-single-pdf" onclick="downloadSelectedHalqaPDF()">🎯 হালকা PDF</button>
     <button class="btn btn-zip" onclick="downloadAllHalqasZip()">📦 সব হালকা ZIP</button>
     <button class="btn btn-all-pdf" onclick="downloadCombinedPDF()">📑 যৌথ PDF</button>
-    <button class="btn" style="background:#475569;" onclick="window.print()">🖨️ প্রিন্ট</button>
+    <button class="btn" style="background:#4b5563;" onclick="window.print()">🖨️ প্রিন্ট</button>
   </div>
 
   <!-- Nigran Mobile View Welcome Banner -->
@@ -184,33 +219,75 @@
       <div class="kpi-badge"><span>মোট সদস্যঃ</span> <b id="kpiTotalMembers">০</b></div>
       <div class="kpi-badge success"><span>উদ্বোধনে (হ্যাঁ)ঃ</span> <b id="kpiOpenYes">০</b></div>
       <div class="kpi-badge purple"><span>সম্পূর্ণে (হ্যাঁ)ঃ</span> <b id="kpiCloseYes">০</b></div>
+      <div class="kpi-badge orange"><span>দায়িত্বপ্রাপ্ত নিগরানঃ</span> <b id="kpiNigranCount">০ জন</b></div>
     </div>
-    <div id="fileStatusText" style="color: #4ade80;">Firebase Live Sync সক্রিয় 🟢</div>
+    <div id="fileStatusText" style="color: #4ade80;">Firebase Live Cloud সক্রিয় 🟢</div>
   </div>
 
-  <!-- VIEW 1: SHEETS -->
+  <!-- ================= VIEW 1: SHEETS ================= -->
   <div id="viewSheets" class="workspace-view active">
     <div class="sheet-wrapper" id="sheetsContainer"></div>
   </div>
 
-  <!-- VIEW 2: NIGRAN COMMITTEE & WHATSAPP SHARE -->
-  <div id="viewNigrans" class="workspace-view">
-    <div class="nigran-container">
+  <!-- ================= VIEW 2: ADMIN & CO-ADMIN HUB ================= -->
+  <div id="viewAdmins" class="workspace-view">
+    <div class="panel-container">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
-          <h2 style="margin:0;">নিগরান তালিকা ও ১-ক্লিক হোয়াটসঅ্যাপ লিঙ্ক শেয়ারিং</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরান ভাইয়ের নামের পাশের সবুজ বাটনে ক্লিক করলেই উনার হোয়াটসঅ্যাপে স্বয়ংক্রিয়ভাবে ইনপুট লিঙ্কটি চলে যাবে।</p>
+          <h2 style="margin:0; color:#1e293b;">এডমিন ও কো-এডমিন হাব (সেন্ট্রাল নিয়ন্ত্রণ)</h2>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">এখানে আপনি সহ যেকোনো ভাইকে কো-এডমিন হিসেবে যুক্ত করতে পারবেন, যারা পুরো সিস্টেম মনিটর ও পরিচালনা করতে পারবেন।</p>
+        </div>
+        <button class="btn btn-admin" onclick="openCoAdminModal()">➕ নতুন কো-এডমিন নিযুক্ত করুন</button>
+      </div>
+
+      <!-- Super Admin Profile Card -->
+      <div style="margin: 18px 0; background: linear-gradient(to right, #fff7ed, #ffedd5); border-left: 5px solid #ea580c; padding: 16px 20px; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3 style="margin:0 0 4px; color:#9a3412;">👑 প্রধান এডমিন (Super Admin): মামুন ভাই</h3>
+            <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব।</p>
+          </div>
+          <span style="background:#ea580c; color:#fff; font-size:11px; padding:4px 10px; border-radius:20px; font-weight:bold;">Active Master</span>
         </div>
       </div>
 
-      <table class="nigran-table">
+      <h4 style="margin:20px 0 10px; color:#334155;">নিযুক্ত কো-এডমিন তালিকা (Co-Admins):</h4>
+      <table class="custom-table">
         <thead>
           <tr>
             <th style="width: 40px; text-align:center;">ক্রম</th>
-            <th style="width: 200px;">নিগরানের নাম</th>
-            <th>দায়িত্বপ্রাপ্ত হালকা</th>
+            <th style="width: 220px;">কো-এডমিনের নাম</th>
+            <th style="width: 160px;">ফোন নম্বর</th>
+            <th>ভূমিকা ও ক্ষমতা</th>
+            <th style="width: 200px; text-align:center;">WhatsApp লিঙ্ক পাঠান</th>
+            <th style="width: 80px; text-align:center;">অপসারণ</th>
+          </tr>
+        </thead>
+        <tbody id="coAdminTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 3: NIGRAN & HALQA MANAGEMENT ================= -->
+  <div id="viewNigrans" class="workspace-view">
+    <div class="panel-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
+        <div>
+          <h2 style="margin:0; color:#1e293b;">নিগরান ও হালকা ব্যবস্থাপনা</h2>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরান ভাইয়ের নাম ও ফোন পরিবর্তন, হালকা পরিবর্তন বা ২-৩ টি হালকা নিযুক্তি করুন।</p>
+        </div>
+        <button class="btn btn-upload" onclick="openNigranModal()">➕ নতুন নিগরান যুক্ত করুন</button>
+      </div>
+
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width: 40px; text-align:center;">ক্রম</th>
+            <th style="width: 220px;">নিগরানের নাম</th>
+            <th>দায়িত্বপ্রাপ্ত হালকা সমূহ (২-৩ টি হালকা)</th>
             <th style="width: 140px;">ফোন নম্বর</th>
-            <th style="width: 200px; text-align:center;">হোয়াটসঅ্যাপে লিঙ্ক পাঠান</th>
+            <th style="width: 180px; text-align:center;">হোয়াটসঅ্যাপে লিঙ্ক</th>
+            <th style="width: 130px; text-align:center;">অ্যাকশন</th>
           </tr>
         </thead>
         <tbody id="nigranTableBody"></tbody>
@@ -218,11 +295,17 @@
     </div>
   </div>
 
-  <!-- VIEW 3: REPORT -->
+  <!-- ================= VIEW 4: REPORT & OVERVIEW ================= -->
   <div id="viewReport" class="workspace-view">
-    <div class="report-container">
-      <h2>৩৯তম বার্ষিক ইজতেমা - লাইভ ক্লাউড উপস্থিতি রিপোর্ট</h2>
-      <table class="nigran-table" style="margin-top:15px;">
+    <div class="panel-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
+        <div>
+          <h2 style="margin:0; color:#1e293b;">৩৯তম বার্ষিক ইজতেমা - পূর্ণাঙ্গ সেন্ট্রাল ওভারভিউ</h2>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">হালকা ভিত্তিক সদস্য সংখ্যা, উদ্বোধনী ও সমাপনী ওয়াদা পরিসংখ্যান</p>
+        </div>
+      </div>
+
+      <table class="custom-table" style="margin-top:15px;">
         <thead>
           <tr>
             <th>হালকার নাম</th>
@@ -239,6 +322,50 @@
     </div>
   </div>
 
+  <!-- Modal: Add / Edit Nigran -->
+  <div class="modal-overlay" id="nigranModal">
+    <div class="modal-card">
+      <h3 id="nigranModalTitle" style="margin:0 0 14px; font-size:18px;">নিগরান তথ্য ও হালকা নির্ধারণ</h3>
+      <input type="hidden" id="editNigranId">
+      <div class="form-group">
+        <label>নিগরানের নামঃ</label>
+        <input type="text" id="inputNigranName" placeholder="যেমন: জনাব শফিক আহমদ খান">
+      </div>
+      <div class="form-group">
+        <label>ফোন নম্বরঃ</label>
+        <input type="text" id="inputNigranPhone" placeholder="যেমন: 01711526643">
+      </div>
+      <div class="form-group">
+        <label>দায়িত্বপ্রাপ্ত হালকা সমূহ (কমা দিয়ে একাধিক লিখুন):</label>
+        <input type="text" id="inputNigranHalkas" placeholder="যেমন: ধানমন্ডি, উত্তরা">
+        <small style="color:#64748b; display:block; margin-top:4px;">* একাধিক হালকা দিলে এই নিগরান সবগুলো হালকার দায়িত্ব পাবেন।</small>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+        <button class="btn" style="background:#64748b;" onclick="closeNigranModal()">বাতিল</button>
+        <button class="btn btn-upload" onclick="saveNigranData()">সংরক্ষণ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Co-Admin -->
+  <div class="modal-overlay" id="coAdminModal">
+    <div class="modal-card">
+      <h3 style="margin:0 0 14px; font-size:18px;">নতুন কো-এডমিন নিযুক্ত করুন</h3>
+      <div class="form-group">
+        <label>কো-এডমিনের নামঃ</label>
+        <input type="text" id="inputCoAdminName" placeholder="যেমন: জনাব তারেক হোসেন">
+      </div>
+      <div class="form-group">
+        <label>ফোন নম্বরঃ</label>
+        <input type="text" id="inputCoAdminPhone" placeholder="যেমন: 01710877567">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+        <button class="btn" style="background:#64748b;" onclick="closeCoAdminModal()">বাতিল</button>
+        <button class="btn btn-admin" onclick="saveCoAdminData()">নিযুক্ত করুন</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Progress Overlay -->
   <div class="progress-overlay" id="progressOverlay">
     <div class="progress-box">
@@ -250,7 +377,7 @@
   </div>
 
   <script>
-    // আপনার ফায়ারবেস কনফিগারেশন
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDS-r4WpY0XgcBEL8qptN9HQysU5Pd7BKs",
       authDomain: "ijtema-wada-2026.firebaseapp.com",
@@ -266,18 +393,20 @@
 
     const ROWS_PER_PAGE = 20;
 
+    // ডিফল্ট ৮ জন নিগরান
     const defaultNigranList = [
-      { id: 1, name: "জনাব শফিক আহমদ খান", halkas: ["ধানমন্ডি", "উত্তরা"], phone: "01711526643" },
-      { id: 2, name: "জনাব আবু সায়েম", halkas: ["বাড্ডা", "শান্তিনগর"], phone: "01670818587" },
-      { id: 3, name: "জনাব মোঃ ওয়াহিদুজ্জামান ভূঁইয়া", halkas: ["মোহাম্মদপুর"], phone: "01715376966" },
-      { id: 4, name: "জনাব আব্দুর রউফ খান", halkas: ["মতিঝিল", "মুগদা"], phone: "01712528789" },
-      { id: 5, name: "জনাব আবুল কালাম আজাদ", halkas: ["আজিমপুর", "দারুত-তবলীগ"], phone: "01552394314" },
-      { id: 6, name: "জনাব আইয়ুব আলী বাবু", halkas: ["মহাখালী"], phone: "01711273860" },
-      { id: 7, name: "জনাব আবু তাহের সোহাগ", halkas: ["কাজলারপার"], phone: "01625120380" },
-      { id: 8, name: "জনাব তারেক হোসেন", halkas: ["বারিধারা-বসুন্ধরা", "পলাশপুর"], phone: "01710877567" }
+      { id: "1", name: "জনাব শফিক আহমদ খান", halkas: ["ধানমন্ডি", "উত্তরা"], phone: "01711526643" },
+      { id: "2", name: "জনাব আবু সায়েম", halkas: ["বাড্ডা", "শান্তিনগর"], phone: "01670818587" },
+      { id: "3", name: "জনাব মোঃ ওয়াহিদুজ্জামান ভূঁইয়া", halkas: ["মোহাম্মদপুর"], phone: "01715376966" },
+      { id: "4", name: "জনাব আব্দুর রউফ খান", halkas: ["মতিঝিল", "মুগদা"], phone: "01712528789" },
+      { id: "5", name: "জনাব আবুল কালাম আজাদ", halkas: ["আজিমপুর", "দারুত-তবলীগ"], phone: "01552394314" },
+      { id: "6", name: "জনাব আইয়ুব আলী বাবু", halkas: ["মহাখালী"], phone: "01711273860" },
+      { id: "7", name: "জনাব আবু তাহের সোহাগ", halkas: ["কাজলারপার"], phone: "01625120380" },
+      { id: "8", name: "জনাব তারেক হোসেন", halkas: ["বারিধারা-বসুন্ধরা", "পলাশপুর"], phone: "01710877567" }
     ];
 
     let nigranList = defaultNigranList;
+    let coAdminList = [];
     let rawRecordsData = [];
     let wadaStateMap = {};
     let globalHalqaPagesMap = {};
@@ -298,6 +427,7 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
       if (viewId === 'viewSheets') document.getElementById('tabBtnSheets').classList.add('active');
+      if (viewId === 'viewAdmins') { document.getElementById('tabBtnAdmins').classList.add('active'); renderCoAdminTable(); }
       if (viewId === 'viewNigrans') { document.getElementById('tabBtnNigrans').classList.add('active'); renderNigranTable(); }
       if (viewId === 'viewReport') { document.getElementById('tabBtnReport').classList.add('active'); renderReportView(); }
     }
@@ -305,7 +435,7 @@
     function findNigranForHalqa(halqaName) {
       if (!halqaName) return null;
       const cleanH = halqaName.trim().toLowerCase();
-      return nigranList.find(n => n.halkas.some(h => cleanH.includes(h.trim().toLowerCase()) || h.trim().toLowerCase().includes(cleanH)));
+      return nigranList.find(n => n.halkas && n.halkas.some(h => cleanH.includes(h.trim().toLowerCase()) || h.trim().toLowerCase().includes(cleanH)));
     }
 
     // ক্লাউড ডেটাবেজে হ্যাঁ/না টগল সেভ
@@ -318,19 +448,18 @@
       refreshLiveKPIs();
     }
 
-    // ক্লাউড লিসেনার ১: সদস্য তালিকা সিঙ্ক
+    // Firebase Listeners
     db.ref('members').on('value', (snapshot) => {
       const data = snapshot.val();
       if (data && data.length > 0) {
         rawRecordsData = data;
-        document.getElementById('fileStatusText').innerText = `মোট সদস্য: ${rawRecordsData.length} জন (ক্লাউড থেকে লোডেড) 🟢`;
+        document.getElementById('fileStatusText').innerText = `মোট সদস্য: ${rawRecordsData.length} জন (ক্লাউড সিঙ্কড) 🟢`;
         rebuildPagesFromData();
         renderNigranTable();
         renderReportView();
       }
     });
 
-    // ক্লাউড লিসেনার ২: ওয়াদা টিক মার্ক লাইভ সিঙ্ক
     db.ref('wada_states').on('value', (snapshot) => {
       const val = snapshot.val();
       if (val) {
@@ -338,6 +467,28 @@
         Object.keys(wadaStateMap).forEach(k => updateRowUI(k));
         refreshLiveKPIs();
       }
+    });
+
+    db.ref('nigrans').on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        nigranList = Object.values(val);
+      } else {
+        const initObj = {};
+        defaultNigranList.forEach(n => initObj[n.id] = n);
+        db.ref('nigrans').set(initObj);
+        nigranList = defaultNigranList;
+      }
+      renderNigranTable();
+      rebuildPagesFromData();
+      renderReportView();
+      document.getElementById('kpiNigranCount').innerText = `${toBanglaNum(nigranList.length)} জন`;
+    });
+
+    db.ref('co_admins').on('value', (snapshot) => {
+      const val = snapshot.val();
+      coAdminList = val ? Object.values(val) : [];
+      renderCoAdminTable();
     });
 
     function updateRowUI(recKey) {
@@ -513,21 +664,58 @@
 
       nigranList.forEach((n, idx) => {
         const uniqueLink = `${currentOrigin}?nid=${n.id}`;
+        const halkasText = (n.halkas && n.halkas.length > 0) ? n.halkas.join(', ') : 'কোনো হালকা নেই';
         const whatsappMsg = encodeURIComponent(
-          `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমায় আপনার দায়িত্বপ্রাপ্ত হালকার (${n.halkas.join(', ')}) সদস্যদের উপস্থিতি ওয়াদা এন্ট্রি করতে নিচের লিংকে ক্লিক করুন:\n${uniqueLink}`
+          `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমায় আপনার দায়িত্বপ্রাপ্ত হালকার (${halkasText}) সদস্যদের উপস্থিতি ওয়াদা এন্ট্রি করতে নিচের লিংকে ক্লিক করুন:\n${uniqueLink}`
         );
         const waUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
+        const halkaChips = (n.halkas || []).map(h => `<span class="halka-badge-tag">${h}</span>`).join(' ');
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="text-align:center; font-weight:bold;">${toBanglaNum(idx + 1)}</td>
           <td><strong>${n.name}</strong></td>
-          <td>${n.halkas.map(h => `<span style="background:#e0f2fe; padding:2px 6px; border-radius:4px; font-size:12px; margin:2px; display:inline-block;">${h}</span>`).join(' ')}</td>
-          <td>${n.phone}</td>
+          <td>${halkaChips || '<span style="color:#94a3b8;">হালকা নির্ধারিত হয়নি</span>'}</td>
+          <td style="font-family:Arial;">${n.phone}</td>
           <td style="text-align:center;">
             <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
               📲 লিঙ্ক পাঠান (WhatsApp)
             </a>
+          </td>
+          <td style="text-align:center;">
+            <button class="btn btn-upload" style="padding:3px 8px; font-size:11px;" onclick="editNigran('${n.id}')">✏️ এডিট</button>
+            <button class="btn" style="background:#dc2626; padding:3px 8px; font-size:11px;" onclick="deleteNigran('${n.id}')">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderCoAdminTable() {
+      const tbody = document.getElementById('coAdminTableBody');
+      tbody.innerHTML = '';
+      const currentOrigin = window.location.origin + window.location.pathname;
+
+      coAdminList.forEach((admin, idx) => {
+        const adminLink = `${currentOrigin}`;
+        const whatsappMsg = encodeURIComponent(
+          `আসসালামু আলাইকুম ${admin.name} ভাই,\nআপনাকে ৩৯তম বার্ষিক ইজতেমার কো-এডমিন (Co-Admin) হিসেবে যুক্ত করা হয়েছে। সেন্ট্রাল সিস্টেম ওভারভিউ ও পরিচালনার জন্য এই লিংকে প্রবেশ করুন:\n${adminLink}`
+        );
+        const waUrl = `https://wa.me/88${admin.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align:center; font-weight:bold;">${toBanglaNum(idx + 1)}</td>
+          <td><strong>${admin.name}</strong></td>
+          <td style="font-family:Arial;">${admin.phone}</td>
+          <td><span style="background:#ffedd5; color:#c2410c; padding:3px 8px; border-radius:4px; font-size:12px; font-weight:bold;">কো-এডমিন (সম্পূর্ণ এক্সেস)</span></td>
+          <td style="text-align:center;">
+            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
+              📲 লিঙ্ক পাঠান (WhatsApp)
+            </a>
+          </td>
+          <td style="text-align:center;">
+            <button class="btn" style="background:#dc2626; padding:3px 8px; font-size:11px;" onclick="deleteCoAdmin('${admin.id}')">🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -558,7 +746,7 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${hName}</strong></td>
-          <td>${nigran ? `${nigran.name} (${nigran.phone})` : 'অনিযুক্ত'}</td>
+          <td>${nigran ? `${nigran.name} (${nigran.phone})` : '<span style="color:#9ca3af;">অনিযুক্ত</span>'}</td>
           <td style="text-align:center; font-weight:bold;">${toBanglaNum(list.length)}</td>
           <td style="text-align:center; color:#15803d; font-weight:bold;">${toBanglaNum(hOpenYes)}</td>
           <td style="text-align:center; color:#b91c1c;">${toBanglaNum(hOpenNo)}</td>
@@ -567,6 +755,92 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    // Modal Control: Nigran
+    function openNigranModal() {
+      document.getElementById('editNigranId').value = '';
+      document.getElementById('nigranModalTitle').innerText = 'নতুন নিগরান যুক্ত করুন';
+      document.getElementById('inputNigranName').value = '';
+      document.getElementById('inputNigranPhone').value = '';
+      document.getElementById('inputNigranHalkas').value = '';
+      document.getElementById('nigranModal').style.display = 'flex';
+    }
+
+    function editNigran(id) {
+      const n = nigranList.find(item => item.id == id);
+      if (!n) return;
+      document.getElementById('editNigranId').value = n.id;
+      document.getElementById('nigranModalTitle').innerText = 'নিগরান তথ্য ও হালকা পরিবর্তন';
+      document.getElementById('inputNigranName').value = n.name || '';
+      document.getElementById('inputNigranPhone').value = n.phone || '';
+      document.getElementById('inputNigranHalkas').value = (n.halkas || []).join(', ');
+      document.getElementById('nigranModal').style.display = 'flex';
+    }
+
+    function closeNigranModal() {
+      document.getElementById('nigranModal').style.display = 'none';
+    }
+
+    function saveNigranData() {
+      const id = document.getElementById('editNigranId').value || 'nig_' + Date.now();
+      const name = document.getElementById('inputNigranName').value.trim();
+      const phone = document.getElementById('inputNigranPhone').value.trim();
+      const halkasInput = document.getElementById('inputNigranHalkas').value.trim();
+
+      if (!name || !phone) {
+        alert('নিগরানের নাম ও ফোন নম্বর পূরণ করুন!');
+        return;
+      }
+
+      const halkas = halkasInput ? halkasInput.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const updatedNigran = { id, name, phone, halkas };
+
+      db.ref('nigrans/' + id).set(updatedNigran).then(() => {
+        closeNigranModal();
+        alert('নিগরান ও হালকা সফলভাবে আপডেট হয়েছে!');
+      });
+    }
+
+    function deleteNigran(id) {
+      if (confirm('আপনি কি এই নিগরানকে তালিকা থেকে মুছে ফেলতে চান?')) {
+        db.ref('nigrans/' + id).remove();
+      }
+    }
+
+    // Modal Control: Co-Admin
+    function openCoAdminModal() {
+      document.getElementById('inputCoAdminName').value = '';
+      document.getElementById('inputCoAdminPhone').value = '';
+      document.getElementById('coAdminModal').style.display = 'flex';
+    }
+
+    function closeCoAdminModal() {
+      document.getElementById('coAdminModal').style.display = 'none';
+    }
+
+    function saveCoAdminData() {
+      const name = document.getElementById('inputCoAdminName').value.trim();
+      const phone = document.getElementById('inputCoAdminPhone').value.trim();
+
+      if (!name || !phone) {
+        alert('কো-এডমিনের নাম ও ফোন নম্বর লিখুন!');
+        return;
+      }
+
+      const id = 'admin_' + Date.now();
+      const newAdmin = { id, name, phone, addedAt: new Date().toISOString() };
+
+      db.ref('co_admins/' + id).set(newAdmin).then(() => {
+        closeCoAdminModal();
+        alert('কো-এডমিন সফলভাবে নিযুক্ত করা হয়েছে!');
+      });
+    }
+
+    function deleteCoAdmin(id) {
+      if (confirm('আপনি কি এই কো-এডমিনকে অপসারণ করতে চান?')) {
+        db.ref('co_admins/' + id).remove();
+      }
     }
 
     // PDF Actions
@@ -634,6 +908,62 @@
       });
     }
 
+    // ==============================================================
+    // স্মার্ট কলাম ডিটেকশন (ভ্যালু ও ডিজিট প্যাটার্ন যাচাইকরণ)
+    // ==============================================================
+    function smartDetectColumns(records) {
+      if (!records || records.length === 0) return { nameKey: '', mobileKey: '', halqaKey: '' };
+      const keys = Object.keys(records[0]);
+
+      // পিতার নাম ফিল্টার
+      const isFather = (k) => /father|f_?name|fname|pita|baba|parent|gardian/i.test(k);
+      const isHalqaField = (k) => /halq|halk|hlq|branch|majlis|shakha|হালকা/i.test(k);
+      const isMobileNamed = (k) => /mob|cell|phone|contact|tel|phn|ফোন|মোবাইল/i.test(k);
+
+      // ১. হালকা কলাম শনাক্ত
+      let halqaKey = keys.find(k => isHalqaField(k));
+
+      // ২. মোবাইল কলাম শনাক্তকরণ (সবচেয়ে নিখুঁত ডাটা ভ্যালিডেশন)
+      const sample = records.slice(0, 50);
+      let bestMobileCol = null;
+      let maxMobileMatches = 0;
+
+      keys.forEach(k => {
+        if (isFather(k)) return; // পিতার নাম কখনো মোবাইল হবে না
+        let matches = 0;
+        sample.forEach(r => {
+          const val = String(r[k] || '').trim();
+          const cleanDigits = val.replace(/[^0-9]/g, '');
+          // বাংলাদেশের মোবাইল নম্বর ০১৩-০১৯ অথবা ১০-১৩ ডিজিট
+          if (/^01[3-9]\d{8}$/.test(cleanDigits) || (cleanDigits.length >= 10 && cleanDigits.length <= 13 && cleanDigits.startsWith('01'))) {
+            matches += 3;
+          } else if (cleanDigits.length >= 10 && cleanDigits.length <= 14) {
+            matches += 1;
+          }
+        });
+        if (matches > maxMobileMatches) {
+          maxMobileMatches = matches;
+          bestMobileCol = k;
+        }
+      });
+
+      let mobileKey = (maxMobileMatches >= 2) ? bestMobileCol : keys.find(k => isMobileNamed(k) && !isFather(k));
+
+      // ৩. সদস্যের নাম কলাম শনাক্তকরণ
+      const isNameField = (k) => /name|member|sodosso|নাম/i.test(k) && !isFather(k) && !isHalqaField(k) && k !== mobileKey;
+      let nameKey = keys.find(isNameField) || keys.find(k => !isFather(k) && !isHalqaField(k) && k !== mobileKey && /name/i.test(k));
+
+      if (!nameKey) {
+        nameKey = keys.find(k => k !== mobileKey && k !== halqaKey && !isFather(k)) || keys[0];
+      }
+
+      if (!mobileKey) {
+        mobileKey = keys.find(k => k !== nameKey && k !== halqaKey && !isFather(k)) || keys[1] || '';
+      }
+
+      return { nameKey, mobileKey, halqaKey };
+    }
+
     // DBF Parser
     function parseDBF(arrayBuffer) {
       const dataView = new DataView(arrayBuffer);
@@ -687,16 +1017,17 @@
 
       let sortedHalqas = Object.keys(groups).sort();
 
-      // নিগরান ভাই স্পেসিফিক লিংক ওপেন করলে ফিল্টার
+      // নিগরান মোড চেক (?nid=X)
       if (activeNid) {
         const currentNigran = nigranList.find(n => n.id == activeNid);
         if (currentNigran) {
           document.getElementById('adminControls').style.display = 'none';
           const banner = document.getElementById('nigranWelcomeBanner');
           banner.style.display = 'block';
-          document.getElementById('nigranWelcomeName').innerText = `${currentNigran.name} (${currentNigran.halkas.join(', ')})`;
+          const halkasName = (currentNigran.halkas || []).join(', ');
+          document.getElementById('nigranWelcomeName').innerText = `${currentNigran.name} (${halkasName})`;
           sortedHalqas = sortedHalqas.filter(h => 
-            currentNigran.halkas.some(target => h.toLowerCase().includes(target.toLowerCase()))
+            currentNigran.halkas && currentNigran.halkas.some(target => h.toLowerCase().includes(target.toLowerCase()))
           );
         }
       }
@@ -727,32 +1058,37 @@
       renderPages(pagesToRender);
     }
 
-    // এডমিন ফাইল আপলোড করলে ক্লাউডে সেভ হবে
+    // এডমিন ফাইল আপলোড হ্যান্ডলার (স্মার্ট ডিটেকশন সহ)
     document.getElementById('dbfFileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(evt) {
-        const raw = parseDBF(evt.target.result);
-        const keys = Object.keys(raw[0] || {});
-        const nameKey = keys.find(k => /name|member|নাম/i.test(k)) || keys[0];
-        const mobileKey = keys.find(k => /mob|phone|ফোন/i.test(k)) || keys[1];
-        const halqaKey = keys.find(k => /halq|halk|branch/i.test(k)) || keys[2];
+        try {
+          const raw = parseDBF(evt.target.result);
+          if (!raw || raw.length === 0) {
+            alert('DBF ফাইলে কোনো রেকর্ড পাওয়া যায়নি!');
+            return;
+          }
 
-        rawRecordsData = raw.map(r => ({
-          name: r[nameKey] || '',
-          mobile: r[mobileKey] || '',
-          halqa: r[halqaKey] ? String(r[halqaKey]).trim() : 'অনির্ধারিত'
-        }));
+          // স্মার্ট কলাম যাচাই
+          const { nameKey, mobileKey, halqaKey } = smartDetectColumns(raw);
 
-        // সরাসরি Firebase ক্লাউডে সেভ করা হচ্ছে
-        db.ref('members').set(rawRecordsData);
-        alert(`মোট ${rawRecordsData.length} জন সদস্য সফলভাবে ফায়ারবেস ক্লাউডে আপলোড হয়েছে!`);
+          rawRecordsData = raw.map(r => ({
+            name: r[nameKey] || '',
+            mobile: r[mobileKey] || '',
+            halqa: halqaKey && r[halqaKey] ? String(r[halqaKey]).trim() : 'অনির্ধারিত'
+          }));
+
+          db.ref('members').set(rawRecordsData);
+          alert(`সফল! মোট ${rawRecordsData.length} জন সদস্যের সঠিক তথ্য ফায়ারবেসে সংরক্ষিত হয়েছে।\n(শনাক্তকৃত: নাম কলাম -> [${nameKey}], মোবাইল -> [${mobileKey}])`);
+        } catch (err) {
+          console.error(err);
+          alert('DBF ফাইল প্রসেস করতে সমস্যা হয়েছে!');
+        }
       };
       reader.readAsArrayBuffer(file);
     });
-
-    renderNigranTable();
   </script>
 </body>
 </html>
