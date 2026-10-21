@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা ও নিগরান সিস্টেম</title>
+  
+  <!-- CDN লাইব্রেরি সমূহ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Google Firebase SDK (Compat Version - No NPM Needed) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Amiri:wght@700&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { margin: 0; padding: 0; background-color: #1e293b; font-family: 'Tiro Bangla', 'Hind Siliguri', Arial, sans-serif; color: #0f172a; }
+
+    /* Top Control Bar */
+    .controls-panel {
+      background: #0f172a; color: #fff; padding: 10px 18px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      position: sticky; top: 0; z-index: 1000;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.45); border-bottom: 1px solid #334155;
+    }
+
+    .brand-title { font-size: 15px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
+
+    .view-tabs { display: inline-flex; background: #1e293b; padding: 3px; border-radius: 8px; border: 1px solid #334155; gap: 3px; }
+    .tab-btn { background: transparent; border: none; color: #94a3b8; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .tab-btn.active { background: #2563eb; color: #fff; }
+
+    input[type="file"] { display: none; }
+    .btn { padding: 6.5px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; color: #fff; text-decoration: none; }
+    .btn:hover { opacity: 0.92; }
+    .btn-upload { background: #2563eb; }
+    .btn-zip { background: #7c3aed; }
+    .btn-single-pdf { background: #059669; }
+    .btn-all-pdf { background: #0284c7; }
+    .btn-whatsapp { background: #25d366; color: #fff; font-size: 12px; }
+
+    .halqa-dropdown { padding: 6px 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: #fff; font-size: 12.5px; outline: none; }
+
+    /* Live KPI Bar */
+    .live-kpi-bar {
+      background: #0b1329; color: #cbd5e1; padding: 8px 18px;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #1e293b; font-size: 12.5px; gap: 12px;
+    }
+    .kpi-badge { background: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1px solid #334155; display: inline-flex; gap: 6px; }
+    .kpi-badge b { color: #38bdf8; }
+    .kpi-badge.success b { color: #4ade80; }
+    .kpi-badge.purple b { color: #c084fc; }
+
+    /* Nigran Mobile View Welcome Banner */
+    .nigran-welcome-banner {
+      display: none; background: #065f46; color: #fff; padding: 12px 20px;
+      text-align: center; font-size: 15px; font-weight: bold; border-bottom: 2px solid #34d399;
+    }
+
+    /* Views */
+    .workspace-view { display: none; }
+    .workspace-view.active { display: block; }
+
+    /* Sheet Design */
+    .sheet-wrapper { padding: 24px 0 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    .page {
+      width: 210mm; height: 297mm; max-height: 297mm; padding: 0.5in;
+      background: #ffffff !important; box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      position: relative; display: flex; flex-direction: column; justify-content: space-between; color: #000;
+    }
+
+    .bismillah { text-align: center; font-family: 'Amiri', serif; font-size: 20px; font-weight: bold; margin-bottom: 2px; }
+    .header-center { text-align: center; line-height: 1.25; }
+    .header-center h1 { margin: 0; font-size: 18px; }
+    .header-center h2 { margin: 2px 0; font-size: 15px; font-weight: normal; }
+    .header-center h3 { margin: 2px 0 5px; font-size: 14px; text-decoration: underline; }
+
+    .meta-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; row-gap: 3px; font-size: 12px; margin-bottom: 6px; }
+    .meta-grid div:nth-child(even) { text-align: right; }
+
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #fff; }
+    th, td { border: 1px solid #000; padding: 1px 3px; font-size: 12px; text-align: center; vertical-align: middle; }
+    th { background-color: #f1f5f9; font-weight: bold; height: 23px; }
+    tbody tr td { height: 8.9mm; }
+
+    col.col-sl { width: 5.5%; }
+    col.col-name { width: 33%; }
+    col.col-mobile { width: 23%; }
+    col.col-wada-open { width: 15.5%; }
+    col.col-wada-close { width: 15%; }
+    col.col-remarks { width: 8%; }
+
+    td.cell-name { text-align: left; padding-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13.5px; }
+    td.cell-mobile { text-align: center; font-family: Arial; font-size: 13.5px; white-space: nowrap; }
+
+    .call-btn-mini {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; background: #e0f2fe; color: #0284c7; border-radius: 50%;
+      text-decoration: none; font-size: 11px; margin-left: 4px; vertical-align: middle;
+    }
+
+    /* Interactive Tick Buttons */
+    .tick-box-btn {
+      display: inline-flex; align-items: center; gap: 3px; font-size: 11px;
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px;
+      padding: 1px 4px; cursor: pointer; user-select: none; color: #334155;
+    }
+    .tick-box-btn .sq-mark {
+      width: 12px; height: 12px; border: 1.2px solid #000; background-color: #fff;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;
+    }
+    .tick-box-btn.is-yes-active { background-color: #dcfce7; border-color: #16a34a; color: #14532d; font-weight: bold; }
+    .tick-box-btn.is-yes-active .sq-mark { background-color: #15803d; color: #fff; border-color: #15803d; }
+    .tick-box-btn.is-no-active { background-color: #fee2e2; border-color: #dc2626; color: #7f1d1d; font-weight: bold; }
+    .tick-box-btn.is-no-active .sq-mark { background-color: #b91c1c; color: #fff; border-color: #b91c1c; }
+
+    .summary-card { border: 1px solid #000; width: 255px; padding: 4px 9px; font-size: 12px; line-height: 1.6; }
+    .summary-card-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; }
+
+    /* Tables in Other Tabs */
+    .nigran-container, .report-container { max-width: 1100px; margin: 25px auto; background: #fff; padding: 25px 30px; border-radius: 12px; }
+    .nigran-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .nigran-table th { background: #1e3a8a; color: #fff; padding: 8px 10px; font-size: 13.5px; border: 1px solid #1e3a8a; text-align: left; }
+    .nigran-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 13.5px; }
+
+    /* Progress Overlay */
+    .progress-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88);
+      z-index: 999999; align-items: center; justify-content: center;
+    }
+    .progress-box { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 24px 32px; border-radius: 12px; width: 420px; text-align: center; }
+    .progress-bar-bg { width: 100%; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 12px 0 8px; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); }
+
+    @media print {
+      body { background: #fff !important; }
+      .controls-panel, .live-kpi-bar, .nigran-welcome-banner, .call-btn-mini { display: none !important; }
+      .workspace-view { display: none !important; }
+      #viewSheets.workspace-view { display: block !important; }
+      .page { box-shadow: none !important; margin: 0 !important; width: 100% !important; page-break-after: always !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Controls Panel (Admin View) -->
+  <div class="controls-panel" id="adminControls">
+    <div class="brand-title">🕌 ইজতেমা ওয়াদা ও নিগরান সিস্টেম</div>
+
+    <div class="view-tabs">
+      <button class="tab-btn active" id="tabBtnSheets" onclick="switchView('viewSheets')">📄 ওয়াদা সিট</button>
+      <button class="tab-btn" id="tabBtnNigrans" onclick="switchView('viewNigrans')">👥 নিগরান ট্র্যাকার ও হোয়াটসঅ্যাপ লিঙ্ক</button>
+      <button class="tab-btn" id="tabBtnReport" onclick="switchView('viewReport')">📊 পূর্ণাঙ্গ রিপোর্ট</button>
+    </div>
+
+    <label class="btn btn-upload">
+      📁 .DBF ফাইল আপলোড
+      <input type="file" id="dbfFileInput" accept=".dbf">
+    </label>
+
+    <select id="halqaSelect" class="halqa-dropdown" onchange="filterHalqaView(this.value)">
+      <option value="">সকল হালকা প্রদর্শন</option>
+    </select>
+
+    <button class="btn btn-single-pdf" onclick="downloadSelectedHalqaPDF()">🎯 হালকা PDF</button>
+    <button class="btn btn-zip" onclick="downloadAllHalqasZip()">📦 সব হালকা ZIP</button>
+    <button class="btn btn-all-pdf" onclick="downloadCombinedPDF()">📑 যৌথ PDF</button>
+    <button class="btn" style="background:#475569;" onclick="window.print()">🖨️ প্রিন্ট</button>
+  </div>
+
+  <!-- Nigran Mobile View Welcome Banner -->
+  <div class="nigran-welcome-banner" id="nigranWelcomeBanner">
+    আসসালামু আলাইকুম, <span id="nigranWelcomeName">নিগরান ভাই</span>! আপনার দায়িত্বপ্রাপ্ত হালকার সদস্যদের তালিকা নিচে দেওয়া হলো।
+  </div>
+
+  <!-- Live KPI Bar -->
+  <div class="live-kpi-bar" id="liveKpiBar">
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <div class="kpi-badge"><span>মোট সদস্যঃ</span> <b id="kpiTotalMembers">০</b></div>
+      <div class="kpi-badge success"><span>উদ্বোধনে (হ্যাঁ)ঃ</span> <b id="kpiOpenYes">০</b></div>
+      <div class="kpi-badge purple"><span>সম্পূর্ণে (হ্যাঁ)ঃ</span> <b id="kpiCloseYes">০</b></div>
+    </div>
+    <div id="fileStatusText" style="color: #4ade80;">Firebase Live Sync সক্রিয় 🟢</div>
+  </div>
+
+  <!-- VIEW 1: SHEETS -->
+  <div id="viewSheets" class="workspace-view active">
+    <div class="sheet-wrapper" id="sheetsContainer"></div>
+  </div>
+
+  <!-- VIEW 2: NIGRAN COMMITTEE & WHATSAPP SHARE -->
+  <div id="viewNigrans" class="workspace-view">
+    <div class="nigran-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
+        <div>
+          <h2 style="margin:0;">নিগরান তালিকা ও ১-ক্লিক হোয়াটসঅ্যাপ লিঙ্ক শেয়ারিং</h2>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরান ভাইয়ের নামের পাশের সবুজ বাটনে ক্লিক করলেই উনার হোয়াটসঅ্যাপে স্বয়ংক্রিয়ভাবে ইনপুট লিঙ্কটি চলে যাবে।</p>
+        </div>
+      </div>
+
+      <table class="nigran-table">
+        <thead>
+          <tr>
+            <th style="width: 40px; text-align:center;">ক্রম</th>
+            <th style="width: 200px;">নিগরানের নাম</th>
+            <th>দায়িত্বপ্রাপ্ত হালকা</th>
+            <th style="width: 140px;">ফোন নম্বর</th>
+            <th style="width: 200px; text-align:center;">হোয়াটসঅ্যাপে লিঙ্ক পাঠান</th>
+          </tr>
+        </thead>
+        <tbody id="nigranTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VIEW 3: REPORT -->
+  <div id="viewReport" class="workspace-view">
+    <div class="report-container">
+      <h2>৩৯তম বার্ষিক ইজতেমা - লাইভ ক্লাউড উপস্থিতি রিপোর্ট</h2>
+      <table class="nigran-table" style="margin-top:15px;">
+        <thead>
+          <tr>
+            <th>হালকার নাম</th>
+            <th>দায়িত্বপ্রাপ্ত নিগরান</th>
+            <th style="text-align:center;">মোট সদস্য</th>
+            <th style="text-align:center; background:#166534; color:#fff;">উদ্বোধনে (হ্যাঁ)</th>
+            <th style="text-align:center; background:#991b1b; color:#fff;">উদ্বোধনে (না)</th>
+            <th style="text-align:center; background:#581c87; color:#fff;">সম্পূর্ণে (হ্যাঁ)</th>
+            <th style="text-align:center; background:#991b1b; color:#fff;">সম্পূর্ণে (না)</th>
+          </tr>
+        </thead>
+        <tbody id="detailedReportTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Progress Overlay -->
+  <div class="progress-overlay" id="progressOverlay">
+    <div class="progress-box">
+      <h4 id="progressTitle" style="margin:0 0 8px; color:#38bdf8;">PDF প্রস্তুত হচ্ছে...</h4>
+      <div id="progressStatus" style="font-size:13px; color:#cbd5e1;">অনুগ্রহ করে অপেক্ষা করুন...</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+      <div id="progressPct" style="font-size:12px; color:#94a3b8; font-weight:bold;">০%</div>
+    </div>
+  </div>
+
+  <script>
+    // আপনার ফায়ারবেস কনফিগারেশন
+    const firebaseConfig = {
+      apiKey: "AIzaSyDS-r4WpY0XgcBEL8qptN9HQysU5Pd7BKs",
+      authDomain: "ijtema-wada-2026.firebaseapp.com",
+      databaseURL: "https://ijtema-wada-2026-default-rtdb.firebaseio.com",
+      projectId: "ijtema-wada-2026",
+      storageBucket: "ijtema-wada-2026.firebasestorage.app",
+      messagingSenderId: "608711063486",
+      appId: "1:608711063486:web:576384316d178e8ef6abef"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const ROWS_PER_PAGE = 20;
+
+    const defaultNigranList = [
+      { id: 1, name: "জনাব শফিক আহমদ খান", halkas: ["ধানমন্ডি", "উত্তরা"], phone: "01711526643" },
+      { id: 2, name: "জনাব আবু সায়েম", halkas: ["বাড্ডা", "শান্তিনগর"], phone: "01670818587" },
+      { id: 3, name: "জনাব মোঃ ওয়াহিদুজ্জামান ভূঁইয়া", halkas: ["মোহাম্মদপুর"], phone: "01715376966" },
+      { id: 4, name: "জনাব আব্দুর রউফ খান", halkas: ["মতিঝিল", "মুগদা"], phone: "01712528789" },
+      { id: 5, name: "জনাব আবুল কালাম আজাদ", halkas: ["আজিমপুর", "দারুত-তবলীগ"], phone: "01552394314" },
+      { id: 6, name: "জনাব আইয়ুব আলী বাবু", halkas: ["মহাখালী"], phone: "01711273860" },
+      { id: 7, name: "জনাব আবু তাহের সোহাগ", halkas: ["কাজলারপার"], phone: "01625120380" },
+      { id: 8, name: "জনাব তারেক হোসেন", halkas: ["বারিধারা-বসুন্ধরা", "পলাশপুর"], phone: "01710877567" }
+    ];
+
+    let nigranList = defaultNigranList;
+    let rawRecordsData = [];
+    let wadaStateMap = {};
+    let globalHalqaPagesMap = {};
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeNid = urlParams.get('nid');
+
+    function toBanglaNum(num) {
+      if (num === undefined || num === null) return '০';
+      const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+      return num.toString().split('').map(c => bnDigits[c] || c).join('');
+    }
+
+    function sanitizeFileName(name) { return name.replace(/[/\\?%*:|"<>]/g, '_').trim(); }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.workspace-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      if (viewId === 'viewSheets') document.getElementById('tabBtnSheets').classList.add('active');
+      if (viewId === 'viewNigrans') { document.getElementById('tabBtnNigrans').classList.add('active'); renderNigranTable(); }
+      if (viewId === 'viewReport') { document.getElementById('tabBtnReport').classList.add('active'); renderReportView(); }
+    }
+
+    function findNigranForHalqa(halqaName) {
+      if (!halqaName) return null;
+      const cleanH = halqaName.trim().toLowerCase();
+      return nigranList.find(n => n.halkas.some(h => cleanH.includes(h.trim().toLowerCase()) || h.trim().toLowerCase().includes(cleanH)));
+    }
+
+    // ক্লাউড ডেটাবেজে হ্যাঁ/না টগল সেভ
+    function toggleWada(recKey, type, choice) {
+      if (!wadaStateMap[recKey]) wadaStateMap[recKey] = { open: null, close: null };
+      wadaStateMap[recKey][type] = (wadaStateMap[recKey][type] === choice) ? null : choice;
+
+      db.ref('wada_states/' + recKey).set(wadaStateMap[recKey]);
+      updateRowUI(recKey);
+      refreshLiveKPIs();
+    }
+
+    // ক্লাউড লিসেনার ১: সদস্য তালিকা সিঙ্ক
+    db.ref('members').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.length > 0) {
+        rawRecordsData = data;
+        document.getElementById('fileStatusText').innerText = `মোট সদস্য: ${rawRecordsData.length} জন (ক্লাউড থেকে লোডেড) 🟢`;
+        rebuildPagesFromData();
+        renderNigranTable();
+        renderReportView();
+      }
+    });
+
+    // ক্লাউড লিসেনার ২: ওয়াদা টিক মার্ক লাইভ সিঙ্ক
+    db.ref('wada_states').on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        wadaStateMap = val;
+        Object.keys(wadaStateMap).forEach(k => updateRowUI(k));
+        refreshLiveKPIs();
+      }
+    });
+
+    function updateRowUI(recKey) {
+      const state = wadaStateMap[recKey] || { open: null, close: null };
+      const btnOpenYes = document.getElementById(`btn_${recKey}_open_yes`);
+      const btnOpenNo = document.getElementById(`btn_${recKey}_open_no`);
+      const btnCloseYes = document.getElementById(`btn_${recKey}_close_yes`);
+      const btnCloseNo = document.getElementById(`btn_${recKey}_close_no`);
+
+      if (btnOpenYes && btnOpenNo) {
+        btnOpenYes.className = `tick-box-btn ${state.open === 'yes' ? 'is-yes-active' : ''}`;
+        btnOpenYes.querySelector('.sq-mark').innerText = state.open === 'yes' ? '✔' : '';
+        btnOpenNo.className = `tick-box-btn ${state.open === 'no' ? 'is-no-active' : ''}`;
+        btnOpenNo.querySelector('.sq-mark').innerText = state.open === 'no' ? '✖' : '';
+      }
+      if (btnCloseYes && btnCloseNo) {
+        btnCloseYes.className = `tick-box-btn ${state.close === 'yes' ? 'is-yes-active' : ''}`;
+        btnCloseYes.querySelector('.sq-mark').innerText = state.close === 'yes' ? '✔' : '';
+        btnCloseNo.className = `tick-box-btn ${state.close === 'no' ? 'is-no-active' : ''}`;
+        btnCloseNo.querySelector('.sq-mark').innerText = state.close === 'no' ? '✖' : '';
+      }
+      updatePageSummaryCards();
+    }
+
+    function updatePageSummaryCards() {
+      document.querySelectorAll('.page').forEach(pageEl => {
+        let openYes = 0, closeYes = 0, validRows = 0;
+        pageEl.querySelectorAll('tbody tr[data-reckey]').forEach(r => {
+          const key = r.getAttribute('data-reckey');
+          if (key && !key.startsWith('empty_')) {
+            validRows++;
+            const st = wadaStateMap[key] || {};
+            if (st.open === 'yes') openYes++;
+            if (st.close === 'yes') closeYes++;
+          }
+        });
+        const spanTotal = pageEl.querySelector('.sum-total-val');
+        const spanOpen = pageEl.querySelector('.sum-open-val');
+        const spanClose = pageEl.querySelector('.sum-close-val');
+        if (spanTotal) spanTotal.innerText = `${toBanglaNum(validRows)} জন`;
+        if (spanOpen) spanOpen.innerText = `${toBanglaNum(openYes)} জন`;
+        if (spanClose) spanClose.innerText = `${toBanglaNum(closeYes)} জন`;
+      });
+    }
+
+    function refreshLiveKPIs() {
+      let totalMembers = rawRecordsData.length;
+      let totalOpenYes = 0, totalCloseYes = 0;
+      rawRecordsData.forEach((r, idx) => {
+        const st = wadaStateMap[`rec_${idx}`] || {};
+        if (st.open === 'yes') totalOpenYes++;
+        if (st.close === 'yes') totalCloseYes++;
+      });
+      document.getElementById('kpiTotalMembers').innerText = toBanglaNum(totalMembers);
+      document.getElementById('kpiOpenYes').innerText = toBanglaNum(totalOpenYes);
+      document.getElementById('kpiCloseYes').innerText = toBanglaNum(totalCloseYes);
+    }
+
+    function renderPages(pagesToRender) {
+      const container = document.getElementById('sheetsContainer');
+      container.innerHTML = '';
+      globalHalqaPagesMap = {};
+      let globalPageIndex = 1;
+
+      pagesToRender.forEach((pageInfo) => {
+        const pageData = [...pageInfo.data];
+        while (pageData.length < ROWS_PER_PAGE) pageData.push({ name: '', mobile: '', halqa: '', _empty: true });
+
+        const assignedNigran = findNigranForHalqa(pageInfo.halqaName);
+        const nigranDisplayName = assignedNigran 
+          ? `${assignedNigran.name} (${assignedNigran.phone}) <a href="tel:${assignedNigran.phone}" class="call-btn-mini">📞</a>`
+          : '________________________';
+
+        const pageEl = document.createElement('div');
+        pageEl.className = 'page';
+        pageEl.setAttribute('data-halqa', pageInfo.halqaName);
+
+        let rowsHtml = '';
+        pageData.forEach((row, index) => {
+          const sl = toBanglaNum((pageInfo.halqaPageIndex - 1) * ROWS_PER_PAGE + index + 1);
+          const recKey = row._empty ? `empty_${pageInfo.halqaName}_${index}` : (row._recKey || `rec_${index}`);
+          const st = wadaStateMap[recKey] || { open: null, close: null };
+          const callLink = (!row._empty && row.mobile) ? `<a href="tel:${row.mobile}" class="call-btn-mini">📞</a>` : '';
+
+          rowsHtml += `
+            <tr data-reckey="${recKey}">
+              <td>${sl}</td>
+              <td class="cell-name">${row.name || ''}</td>
+              <td class="cell-mobile">${row.mobile || ''} ${callLink}</td>
+              <td>
+                ${row._empty ? '' : `
+                  <div style="display:flex; justify-content:center; gap:4px;">
+                    <button type="button" id="btn_${recKey}_open_yes" class="tick-box-btn ${st.open === 'yes' ? 'is-yes-active' : ''}" onclick="toggleWada('${recKey}', 'open', 'yes')">
+                      <span class="sq-mark">${st.open === 'yes' ? '✔' : ''}</span>হ্যাঁ
+                    </button>
+                    <button type="button" id="btn_${recKey}_open_no" class="tick-box-btn ${st.open === 'no' ? 'is-no-active' : ''}" onclick="toggleWada('${recKey}', 'open', 'no')">
+                      <span class="sq-mark">${st.open === 'no' ? '✖' : ''}</span>না
+                    </button>
+                  </div>
+                `}
+              </td>
+              <td>
+                ${row._empty ? '' : `
+                  <div style="display:flex; justify-content:center; gap:4px;">
+                    <button type="button" id="btn_${recKey}_close_yes" class="tick-box-btn ${st.close === 'yes' ? 'is-yes-active' : ''}" onclick="toggleWada('${recKey}', 'close', 'yes')">
+                      <span class="sq-mark">${st.close === 'yes' ? '✔' : ''}</span>হ্যাঁ
+                    </button>
+                    <button type="button" id="btn_${recKey}_close_no" class="tick-box-btn ${st.close === 'no' ? 'is-no-active' : ''}" onclick="toggleWada('${recKey}', 'close', 'no')">
+                      <span class="sq-mark">${st.close === 'no' ? '✖' : ''}</span>না
+                    </button>
+                  </div>
+                `}
+              </td>
+              <td></td>
+            </tr>
+          `;
+        });
+
+        pageEl.innerHTML = `
+          <div>
+            <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            <div class="header-center">
+              <h1>মজলিস আনসারুল্লাহ মোকামি ঢাকা</h1>
+              <h2>৩৯তম স্থানীয় বার্ষিক ইজতেমা ২০২৬</h2>
+              <h3>উপস্থিতির ওয়াদা সিট</h3>
+            </div>
+            <div class="meta-grid">
+              <div><strong>তারিখ ও বারঃ</strong> ৬ ও ৭ নভেম্বর ২০২৬, শুক্র ও শনিবার</div>
+              <div><strong>স্থানঃ</strong> দারুত তবলীগ কমপ্লেক্স</div>
+              <div><strong>উদ্বোধনঃ</strong> ৬ নভেম্বর, শুক্রবার সকাল ৯:৩০ টায়</div>
+              <div><strong>সমাপনীঃ</strong> ৭ নভেম্বর, শনিবার দুপুর</div>
+              <div><strong>হালকাঃ</strong> ${pageInfo.halqaName}</div>
+              <div><strong>নিগরানঃ</strong> ${nigranDisplayName}</div>
+            </div>
+            <table>
+              <colgroup><col class="col-sl"><col class="col-name"><col class="col-mobile"><col class="col-wada-open"><col class="col-wada-close"><col class="col-remarks"></colgroup>
+              <thead>
+                <tr>
+                  <th rowspan="2">ক্রমিক</th><th rowspan="2">সদস্যের নাম</th><th rowspan="2">মোবাইল নম্বর</th><th colspan="2">উপস্থিতির ওয়াদা</th><th rowspan="2">মন্তব্য</th>
+                </tr>
+                <tr><th>উদ্বোধনী অনুষ্ঠান</th><th>সম্পূর্ণ অনুষ্ঠান</th></tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div class="summary-card">
+              <div class="summary-card-row"><span>মোট সদস্যঃ</span> <span class="sum-total-val" style="font-weight:bold;">০ জন</span></div>
+              <div class="summary-card-row"><span>উদ্বোধনে ওয়াদাঃ</span> <span class="sum-open-val" style="color:#15803d; font-weight:bold;">০ জন</span></div>
+              <div class="summary-card-row"><span>সমাপনীতে ওয়াদাঃ</span> <span class="sum-close-val" style="color:#7c3aed; font-weight:bold;">০ জন</span></div>
+            </div>
+            <div style="text-align:center; width:180px;">
+              <div style="border-top:1px solid #000; margin-bottom:4px;"></div>
+              <div style="font-size:12px; font-weight:bold;">${assignedNigran ? assignedNigran.name : 'নিগরানের স্বাক্ষর'}</div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(pageEl);
+        if (!globalHalqaPagesMap[pageInfo.halqaName]) globalHalqaPagesMap[pageInfo.halqaName] = [];
+        globalHalqaPagesMap[pageInfo.halqaName].push(pageEl);
+        globalPageIndex++;
+      });
+
+      updatePageSummaryCards();
+      refreshLiveKPIs();
+    }
+
+    function renderNigranTable() {
+      const tbody = document.getElementById('nigranTableBody');
+      tbody.innerHTML = '';
+      const currentOrigin = window.location.origin + window.location.pathname;
+
+      nigranList.forEach((n, idx) => {
+        const uniqueLink = `${currentOrigin}?nid=${n.id}`;
+        const whatsappMsg = encodeURIComponent(
+          `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমায় আপনার দায়িত্বপ্রাপ্ত হালকার (${n.halkas.join(', ')}) সদস্যদের উপস্থিতি ওয়াদা এন্ট্রি করতে নিচের লিংকে ক্লিক করুন:\n${uniqueLink}`
+        );
+        const waUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align:center; font-weight:bold;">${toBanglaNum(idx + 1)}</td>
+          <td><strong>${n.name}</strong></td>
+          <td>${n.halkas.map(h => `<span style="background:#e0f2fe; padding:2px 6px; border-radius:4px; font-size:12px; margin:2px; display:inline-block;">${h}</span>`).join(' ')}</td>
+          <td>${n.phone}</td>
+          <td style="text-align:center;">
+            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
+              📲 লিঙ্ক পাঠান (WhatsApp)
+            </a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderReportView() {
+      const tbody = document.getElementById('detailedReportTableBody');
+      tbody.innerHTML = '';
+      const halqaGroups = {};
+      rawRecordsData.forEach((r, idx) => {
+        const h = r.halqa || 'অনির্ধারিত';
+        if (!halqaGroups[h]) halqaGroups[h] = [];
+        halqaGroups[h].push({ ...r, _recKey: `rec_${idx}` });
+      });
+
+      Object.keys(halqaGroups).sort().forEach(hName => {
+        const list = halqaGroups[hName];
+        let hOpenYes = 0, hOpenNo = 0, hCloseYes = 0, hCloseNo = 0;
+        list.forEach(item => {
+          const st = wadaStateMap[item._recKey] || {};
+          if (st.open === 'yes') hOpenYes++;
+          if (st.open === 'no') hOpenNo++;
+          if (st.close === 'yes') hCloseYes++;
+          if (st.close === 'no') hCloseNo++;
+        });
+        const nigran = findNigranForHalqa(hName);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${hName}</strong></td>
+          <td>${nigran ? `${nigran.name} (${nigran.phone})` : 'অনিযুক্ত'}</td>
+          <td style="text-align:center; font-weight:bold;">${toBanglaNum(list.length)}</td>
+          <td style="text-align:center; color:#15803d; font-weight:bold;">${toBanglaNum(hOpenYes)}</td>
+          <td style="text-align:center; color:#b91c1c;">${toBanglaNum(hOpenNo)}</td>
+          <td style="text-align:center; color:#7c3aed; font-weight:bold;">${toBanglaNum(hCloseYes)}</td>
+          <td style="text-align:center; color:#b91c1c;">${toBanglaNum(hCloseNo)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // PDF Actions
+    async function capturePageToCanvas(pageEl) {
+      return await html2canvas(pageEl, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+    }
+
+    async function downloadSelectedHalqaPDF() {
+      const halqaName = document.getElementById('halqaSelect').value;
+      if (!halqaName || !globalHalqaPagesMap[halqaName]) return alert('হালকা নির্বাচন করুন!');
+      const pages = globalHalqaPagesMap[halqaName];
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await capturePageToCanvas(pages[i]);
+        if (i > 0) pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      }
+      pdf.save(`ওয়াদা_সিট_${sanitizeFileName(halqaName)}.pdf`);
+    }
+
+    async function downloadAllHalqasZip() {
+      const hNames = Object.keys(globalHalqaPagesMap);
+      if (hNames.length === 0) return alert('কোনো পেজ নেই!');
+      const zip = new JSZip();
+      const { jsPDF } = window.jspdf;
+      document.getElementById('progressOverlay').style.display = 'flex';
+
+      for (let h = 0; h < hNames.length; h++) {
+        const hName = hNames[h];
+        const pages = globalHalqaPagesMap[hName];
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
+        for (let p = 0; p < pages.length; p++) {
+          const canvas = await capturePageToCanvas(pages[p]);
+          if (p > 0) pdf.addPage();
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        }
+        zip.file(`ওয়াদা_সিট_${sanitizeFileName(hName)}.pdf`, pdf.output('blob'));
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(zipBlob);
+      a.download = 'সকল_হালকা_আলাদা_ওয়াদা_সিট_PDFs.zip';
+      a.click();
+      document.getElementById('progressOverlay').style.display = 'none';
+    }
+
+    async function downloadCombinedPDF() {
+      const allPages = document.querySelectorAll('#sheetsContainer .page');
+      if (allPages.length === 0) return alert('কোনো পেজ নেই!');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
+      for (let i = 0; i < allPages.length; i++) {
+        const canvas = await capturePageToCanvas(allPages[i]);
+        if (i > 0) pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      }
+      pdf.save('ইজতেমা_ওয়াদা_সিট_সকল_হালকা_যৌথ.pdf');
+    }
+
+    function filterHalqaView(selectedHalqa) {
+      document.querySelectorAll('#sheetsContainer .page').forEach(pageEl => {
+        pageEl.style.display = (!selectedHalqa || pageEl.getAttribute('data-halqa') === selectedHalqa) ? 'flex' : 'none';
+      });
+    }
+
+    // DBF Parser
+    function parseDBF(arrayBuffer) {
+      const dataView = new DataView(arrayBuffer);
+      const recordsCount = dataView.getUint32(4, true);
+      const headerLength = dataView.getUint16(8, true);
+      const recordLength = dataView.getUint16(10, true);
+      const fields = [];
+      let offset = 32;
+
+      while (offset < headerLength - 1) {
+        if (dataView.getUint8(offset) === 0x0D) break;
+        let fieldName = '';
+        for (let i = 0; i < 11; i++) {
+          const charCode = dataView.getUint8(offset + i);
+          if (charCode === 0) break;
+          fieldName += String.fromCharCode(charCode);
+        }
+        fields.push({ name: fieldName.trim(), length: dataView.getUint8(offset + 16) });
+        offset += 32;
+      }
+
+      const decoder = new TextDecoder('utf-8');
+      const records = [];
+      let recordOffset = headerLength;
+
+      for (let r = 0; r < recordsCount; r++) {
+        if (dataView.getUint8(recordOffset) !== 0x2A) {
+          let fieldStart = recordOffset + 1;
+          const row = {};
+          for (const f of fields) {
+            row[f.name] = decoder.decode(new Uint8Array(arrayBuffer, fieldStart, f.length)).trim().replace(/\0/g, '');
+            fieldStart += f.length;
+          }
+          records.push(row);
+        }
+        recordOffset += recordLength;
+      }
+      return records;
+    }
+
+    function rebuildPagesFromData() {
+      if (!rawRecordsData || rawRecordsData.length === 0) return;
+
+      const groups = {};
+      rawRecordsData.forEach((rec, idx) => {
+        const item = { ...rec, _recKey: `rec_${idx}` };
+        const h = rec.halqa || 'অনির্ধারিত';
+        if (!groups[h]) groups[h] = [];
+        groups[h].push(item);
+      });
+
+      let sortedHalqas = Object.keys(groups).sort();
+
+      // নিগরান ভাই স্পেসিফিক লিংক ওপেন করলে ফিল্টার
+      if (activeNid) {
+        const currentNigran = nigranList.find(n => n.id == activeNid);
+        if (currentNigran) {
+          document.getElementById('adminControls').style.display = 'none';
+          const banner = document.getElementById('nigranWelcomeBanner');
+          banner.style.display = 'block';
+          document.getElementById('nigranWelcomeName').innerText = `${currentNigran.name} (${currentNigran.halkas.join(', ')})`;
+          sortedHalqas = sortedHalqas.filter(h => 
+            currentNigran.halkas.some(target => h.toLowerCase().includes(target.toLowerCase()))
+          );
+        }
+      }
+
+      const select = document.getElementById('halqaSelect');
+      select.innerHTML = '<option value="">-- সকল হালকা প্রদর্শন --</option>';
+      sortedHalqas.forEach(hName => {
+        const opt = document.createElement('option');
+        opt.value = hName;
+        opt.innerText = `${hName} (${groups[hName].length} জন)`;
+        select.appendChild(opt);
+      });
+
+      const pagesToRender = [];
+      sortedHalqas.forEach(hName => {
+        const list = groups[hName];
+        const totalP = Math.ceil(list.length / ROWS_PER_PAGE) || 1;
+        for (let p = 0; p < totalP; p++) {
+          pagesToRender.push({
+            halqaName: hName,
+            halqaPageIndex: p + 1,
+            halqaTotalPages: totalP,
+            data: list.slice(p * ROWS_PER_PAGE, (p + 1) * ROWS_PER_PAGE)
+          });
+        }
+      });
+
+      renderPages(pagesToRender);
+    }
+
+    // এডমিন ফাইল আপলোড করলে ক্লাউডে সেভ হবে
+    document.getElementById('dbfFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const raw = parseDBF(evt.target.result);
+        const keys = Object.keys(raw[0] || {});
+        const nameKey = keys.find(k => /name|member|নাম/i.test(k)) || keys[0];
+        const mobileKey = keys.find(k => /mob|phone|ফোন/i.test(k)) || keys[1];
+        const halqaKey = keys.find(k => /halq|halk|branch/i.test(k)) || keys[2];
+
+        rawRecordsData = raw.map(r => ({
+          name: r[nameKey] || '',
+          mobile: r[mobileKey] || '',
+          halqa: r[halqaKey] ? String(r[halqaKey]).trim() : 'অনির্ধারিত'
+        }));
+
+        // সরাসরি Firebase ক্লাউডে সেভ করা হচ্ছে
+        db.ref('members').set(rawRecordsData);
+        alert(`মোট ${rawRecordsData.length} জন সদস্য সফলভাবে ফায়ারবেস ক্লাউডে আপলোড হয়েছে!`);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    renderNigranTable();
+  </script>
+</body>
+</html>
