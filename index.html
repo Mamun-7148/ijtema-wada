@@ -143,84 +143,100 @@
 
     /* Desktop Phone Box */
     .phone-column-box {
-      display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; padding: 2px 0;
+      display: flex; flex-direction: column; gap: 1px; align-items: center; justify-content: center; padding: 0;
     }
     .phone-item-row {
-      display: flex; flex-direction: column; gap: 3px;
-      background: #f8fafc; padding: 3px 5px; border-radius: 5px; border: 1px solid #cbd5e1;
-      width: 100%; max-width: 190px;
+      display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 2px;
+      background: #f8fafc; padding: 1px 3px; border-radius: 3px; border: 1px solid #cbd5e1;
+      width: 100%; max-width: 175px; font-size: 10px;
     }
     .phone-num-top {
-      display: flex; align-items: center; justify-content: space-between; gap: 4px;
+      display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     }
     .phone-number-text {
-      font-family: Arial, sans-serif; font-size: 11.5px; font-weight: bold; color: #0f172a;
+      font-family: Arial, sans-serif; font-size: 10.5px; font-weight: bold; color: #0f172a;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .call-btn-mini {
       display: inline-flex; align-items: center; justify-content: center;
-      background: #0284c7; color: #fff; border-radius: 4px; padding: 2px 5px;
-      text-decoration: none; font-size: 10px; font-weight: bold; gap: 2px;
+      background: #0284c7; color: #fff; border-radius: 3px; padding: 1px 3px;
+      text-decoration: none; font-size: 9px; font-weight: bold; gap: 1px; flex-shrink: 0;
     }
     .call-btn-mini:hover { background: #0369a1; }
     .wa-msg-mini-link {
       display: inline-flex; align-items: center; justify-content: center;
-      background: #25d366; color: #fff; border-radius: 4px; padding: 2px 5px;
-      text-decoration: none; font-size: 10px; font-weight: bold; gap: 3px;
+      background: #25d366; color: #fff; border-radius: 3px; padding: 1px 3px;
+      text-decoration: none; font-size: 9px; font-weight: bold; gap: 1px; flex-shrink: 0;
     }
 
     /* Remarks Input on Desktop Table */
     .table-remarks-input {
-      width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 4px; font-size: 11.5px; outline: none;
+      width: 100%; border: 1px solid #cbd5e1; border-radius: 3px; padding: 1px 3px; font-size: 10.5px; outline: none;
+      height: 18px; box-sizing: border-box;
     }
     .table-remarks-input:focus { border-color: #2563eb; }
 
     /* Desktop A4 Sheet */
     .sheet-wrapper { padding: 15px 0 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
     .page {
-      width: 210mm; height: 297mm; max-height: 297mm; padding: 0.5in;
+      width: 210mm; height: 297mm; max-height: 297mm; padding: 0.32in 0.35in;
       background: #ffffff !important; box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      position: relative; display: flex; flex-direction: column; justify-content: space-between; color: #000;
+      position: relative; display: flex; flex-direction: column; justify-content: flex-start; color: #000;
+      overflow: hidden; box-sizing: border-box;
+    }
+    .page > div:first-child {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .page > div:last-child {
+      flex: 0 0 auto;
+      margin-top: 4px;
     }
 
-    .bismillah { text-align: center; font-family: 'Amiri', serif; font-size: 20px; font-weight: bold; margin-bottom: 2px; }
-    .header-center { text-align: center; line-height: 1.25; }
-    .header-center h1 { margin: 0; font-size: 18.5px; font-weight: bold; }
-    .header-center h2 { margin: 2px 0; font-size: 15px; font-weight: 600; color: #1e3a8a; }
-    .header-center h3 { margin: 2px 0 5px; font-size: 14px; text-decoration: underline; font-weight: bold; }
+    .bismillah { text-align: center; font-family: 'Amiri', serif; font-size: 17px; font-weight: bold; margin-bottom: 1px; line-height: 1.15; }
+    .header-center { text-align: center; line-height: 1.15; }
+    .header-center h1 { margin: 0; font-size: 16px; font-weight: bold; }
+    .header-center h2 { margin: 1px 0; font-size: 13.5px; font-weight: 600; color: #1e3a8a; }
+    .header-center h3 { margin: 1px 0 2px; font-size: 12.5px; text-decoration: underline; font-weight: bold; }
 
-    .meta-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; row-gap: 3px; font-size: 12px; margin-bottom: 6px; }
+    .meta-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; row-gap: 1px; font-size: 11px; margin-bottom: 3px; }
     .meta-grid div:nth-child(even) { text-align: right; }
 
-    table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #fff; }
-    th, td { border: 1px solid #000; padding: 1px 3px; font-size: 12px; text-align: center; vertical-align: middle; }
-    th { background-color: #f1f5f9; font-weight: bold; height: 23px; }
-    tbody tr td { height: 9.2mm; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #fff; flex: 1 1 auto; }
+    th, td { border: 1px solid #000; padding: 0px 2px; font-size: 11px; text-align: center; vertical-align: middle; }
+    th { background-color: #f1f5f9; font-weight: bold; height: 18px; line-height: 1.1; }
+    tbody tr { height: 7.6mm; max-height: 7.6mm; }
+    tbody tr td { height: 7.6mm; max-height: 7.6mm; overflow: hidden; }
 
-    col.col-sl { width: 5.5%; }
-    col.col-name { width: 28%; }
-    col.col-mobile { width: 25%; }
+    col.col-sl { width: 5%; }
+    col.col-name { width: 27%; }
+    col.col-mobile { width: 26%; }
     col.col-wada-open { width: 13.5%; }
     col.col-wada-close { width: 13%; }
-    col.col-remarks { width: 15%; }
+    col.col-remarks { width: 15.5%; }
 
-    td.cell-name { text-align: left; padding-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13.5px; }
+    td.cell-name { text-align: left; padding-left: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
 
     /* Interactive Tick Buttons */
     .tick-box-btn {
-      display: inline-flex; align-items: center; gap: 3px; font-size: 11px;
-      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px;
-      padding: 1px 4px; cursor: pointer; user-select: none; color: #334155;
+      display: inline-flex; align-items: center; gap: 2px; font-size: 10px;
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 3px;
+      padding: 0px 3px; cursor: pointer; user-select: none; color: #334155;
+      line-height: 1.2; height: 18px;
     }
     .tick-box-btn .sq-mark {
-      width: 12px; height: 12px; border: 1.2px solid #000; background-color: #fff;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;
+      width: 11px; height: 11px; border: 1px solid #000; background-color: #fff;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold;
     }
     .tick-box-btn.is-yes-active { background-color: #dcfce7; border-color: #16a34a; color: #14532d; font-weight: bold; }
     .tick-box-btn.is-yes-active .sq-mark { background-color: #15803d; color: #fff; border-color: #15803d; }
     .tick-box-btn.is-no-active { background-color: #fee2e2; border-color: #dc2626; color: #7f1d1d; font-weight: bold; }
     .tick-box-btn.is-no-active .sq-mark { background-color: #b91c1c; color: #fff; border-color: #b91c1c; }
 
-    .summary-card { border: 1px solid #000; width: 255px; padding: 4px 9px; font-size: 12px; line-height: 1.6; }
+    .summary-card { border: 1px solid #000; width: 230px; padding: 2px 7px; font-size: 11px; line-height: 1.35; }
     .summary-card-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; }
 
     /* Mobile Calling View */
@@ -659,7 +675,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const ROWS_PER_PAGE = 20;
+    const ROWS_PER_PAGE = 16;
 
     const defaultNigranList = [
       { id: "1", name: "জনাব শফিক আহমদ খান", halkas: ["ধানমন্ডি", "উত্তরা"], phone: "01711526643" },
@@ -773,13 +789,9 @@
             const dialNum = getCleanDialNumber(p);
             return `
               <div class="phone-item-row">
-                <div class="phone-num-top">
-                  <span class="phone-number-text">${p}</span>
-                  <a href="tel:+${dialNum}" class="call-btn-mini" title="কল করুন">📞 কল</a>
-                </div>
-                <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" class="wa-msg-mini-link" title="হোয়াটসঅ্যাপে মেসেজ পাঠান">
-                  💬 মেসেজ করুন
-                </a>
+                <span class="phone-number-text">${p}</span>
+                <a href="tel:+${dialNum}" class="call-btn-mini" title="কল করুন">📞</a>
+                <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" class="wa-msg-mini-link" title="হোয়াটসঅ্যাপে মেসেজ">💬</a>
               </div>
             `;
           }).join('')}
