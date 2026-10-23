@@ -1045,13 +1045,19 @@
       document.getElementById('kpiCloseYes').innerText = toBanglaNum(totalCloseYes);
     }
 
-    // মোবাইল স্টিকি মিনি হেডার প্রগ্রেস আপডেট
+    // মোবাইল স্টিকি মিনি হেডার প্রগ্রেস আপডেট (আপডেট করা হয়েছে)
     function updateMobileStickyProgress() {
       const visibleCards = Array.from(document.querySelectorAll('.member-mobile-card'));
-      let total = visibleCards.length;
+      let total = 0;
       let completed = 0;
 
       visibleCards.forEach(c => {
+        // শুধুমাত্র সিলেক্ট করা হালকার কার্ডগুলো গণনা করবে
+        const parentGrp = c.closest('.mobile-halqa-group');
+        const gHalqa = parentGrp ? parentGrp.getAttribute('data-halqa') : null;
+        if (currentSelectedHalqaFilter && !isHalkaMatched(gHalqa, currentSelectedHalqaFilter)) return;
+
+        total++;
         const key = c.getAttribute('data-reckey');
         const st = wadaStateMap[key] || {};
         if ((st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined)) {
@@ -1079,6 +1085,7 @@
       handleCombinedSearchAndFilter();
     }
 
+    // সার্চ এবং মোবাইল ফিল্টার ফাংশন (আপডেট করা হয়েছে)
     function handleCombinedSearchAndFilter() {
       const query = (document.getElementById('memberSearchInput').value || '').trim().toLowerCase();
 
@@ -1097,21 +1104,37 @@
         card.style.display = (matchesQuery && matchesFilter) ? 'block' : 'none';
       });
 
-      // খালি হওয়া গ্রুপের ডিভাইডার লুকিয়ে ফেলা
+      // খালি হওয়া গ্রুপের ডিভাইডার লুকিয়ে ফেলা এবং হালকা ফিল্টার অ্যাপ্লাই করা
       document.querySelectorAll('.mobile-halqa-group').forEach(grp => {
+        const gHalqa = grp.getAttribute('data-halqa');
+        
+        // চেক করা হচ্ছে গ্রুপটি বর্তমানে সিলেক্ট করা হালকার সাথে মিলছে কি না
+        const matchesHalqaFilter = !currentSelectedHalqaFilter || isHalkaMatched(gHalqa, currentSelectedHalqaFilter);
+        
         const anyVisible = Array.from(grp.querySelectorAll('.member-mobile-card')).some(c => c.style.display !== 'none');
-        grp.style.display = anyVisible ? 'block' : 'none';
+        
+        // শুধু তখনই গ্রুপ দেখাবে যখন হালকাও মিলবে এবং ভেতরের কার্ডও ভিজিবল থাকবে
+        grp.style.display = (matchesHalqaFilter && anyVisible) ? 'block' : 'none';
       });
 
       updateFilterCounts();
     }
 
+    // চিপ বাটনের কাউন্ট আপডেট (আপডেট করা হয়েছে)
     function updateFilterCounts() {
       const allCards = Array.from(document.querySelectorAll('.member-mobile-card'));
+      let totalCount = 0;
       let pendingCount = 0;
       let confirmedCount = 0;
 
       allCards.forEach(c => {
+        // শুধুমাত্র সিলেক্ট করা হালকার কাউন্ট হিসেব করবে
+        const parentGrp = c.closest('.mobile-halqa-group');
+        const gHalqa = parentGrp ? parentGrp.getAttribute('data-halqa') : null;
+        if (currentSelectedHalqaFilter && !isHalkaMatched(gHalqa, currentSelectedHalqaFilter)) return;
+
+        totalCount++;
+
         const key = c.getAttribute('data-reckey');
         const st = wadaStateMap[key] || {};
         const hasChoice = (st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined);
@@ -1125,12 +1148,12 @@
       const countChipPending = document.getElementById('countChipPending');
       const countChipConfirmed = document.getElementById('countChipConfirmed');
 
-      if (countChipAll) countChipAll.innerText = toBanglaNum(allCards.length);
+      if (countChipAll) countChipAll.innerText = toBanglaNum(totalCount);
       if (countChipPending) countChipPending.innerText = toBanglaNum(pendingCount);
       if (countChipConfirmed) countChipConfirmed.innerText = toBanglaNum(confirmedCount);
     }
 
-    // হালকা ড্রপডাউন পরিবর্তন
+    // হালকা ড্রপডাউন পরিবর্তন (আপডেট করা হয়েছে)
     function applyHalqaFilter(selectedHalqa) {
       currentSelectedHalqaFilter = selectedHalqa ? selectedHalqa.trim() : "";
 
@@ -1144,16 +1167,7 @@
         }
       });
 
-      // ২. মোবাইল হালকা গ্রুপ ফিল্টার
-      document.querySelectorAll('#mobileCardsContainer .mobile-halqa-group').forEach(grpEl => {
-        const gHalqa = grpEl.getAttribute('data-halqa');
-        if (!currentSelectedHalqaFilter || isHalkaMatched(gHalqa, currentSelectedHalqaFilter)) {
-          grpEl.style.display = 'block';
-        } else {
-          grpEl.style.display = 'none';
-        }
-      });
-
+      // ২. মোবাইল ভিউ আপডেট (handleCombinedSearchAndFilter এখন সব ঠিকমতো হ্যান্ডেল করবে)
       handleCombinedSearchAndFilter();
       updateMobileStickyProgress();
     }
