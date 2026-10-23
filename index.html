@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা কালেকশন সিস্টেম</title>
+  <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা কালেকশন সিস্টেম</title>
   
   <!-- CDN Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -41,8 +41,9 @@
     .tab-btn.active { background: #2563eb; color: #fff; }
 
     input[type="file"] { display: none; }
-    .btn { padding: 6.5px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; color: #fff; text-decoration: none; }
-    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn { padding: 6.5px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; color: #fff; text-decoration: none; transition: all 0.15s ease; }
+    .btn:active { transform: scale(0.96); }
+    .btn:hover { opacity: 0.92; }
     .btn-upload { background: #2563eb; }
     .btn-zip { background: #7c3aed; }
     .btn-single-pdf { background: #059669; }
@@ -74,21 +75,56 @@
     }
     .nigran-tab-btn.active { background: #10b981; color: #022c22; font-weight: bold; }
 
-    /* Nigran Mode Restriction: Admin Controls Strict Hide */
+    /* Nigran Mode Restriction */
     body.is-nigran-mode .controls-panel { display: none !important; }
     body.is-nigran-mode #viewAdmins { display: none !important; }
     body.is-nigran-mode #viewNigrans { display: none !important; }
     body.is-nigran-mode .nigran-portal-nav { display: block !important; }
 
+    /* Sticky Mini Header for Mobile Progress */
+    .mobile-sticky-progress-header {
+      display: none;
+      position: sticky;
+      top: 48px;
+      z-index: 990;
+      background: #1e293b;
+      color: #fff;
+      padding: 8px 14px;
+      border-bottom: 1px solid #334155;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+    .mobile-sticky-progress-header .top-line {
+      display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; font-weight: 600;
+    }
+    .mobile-progress-bar-bg {
+      width: 100%; height: 6px; background: #334155; border-radius: 3px; overflow: hidden; margin-top: 6px;
+    }
+    .mobile-progress-bar-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #38bdf8); transition: width 0.3s ease;
+    }
+
     /* Search & Filter Toolbar */
     .search-filter-toolbar {
-      max-width: 1100px; margin: 12px auto 0; padding: 0 14px; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+      max-width: 1100px; margin: 12px auto 0; padding: 0 14px; display: flex; flex-direction: column; gap: 8px;
     }
     .search-input-box {
-      flex: 1; min-width: 240px; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155;
+      width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #334155;
       background: #1e293b; color: #fff; font-size: 13.5px; outline: none;
     }
     .search-input-box:focus { border-color: #38bdf8; }
+
+    /* Quick Mobile Filter Chips */
+    .mobile-quick-filter-chips {
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+    }
+    .filter-chip-btn {
+      background: #1e293b; border: 1px solid #334155; color: #94a3b8;
+      padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: 0.15s;
+    }
+    .filter-chip-btn.active {
+      background: #2563eb; color: #fff; border-color: #2563eb;
+    }
 
     /* Live KPI Bar */
     .live-kpi-bar {
@@ -105,7 +141,7 @@
     .workspace-view { display: none; }
     .workspace-view.active { display: block; }
 
-    /* Phone Numbers Container */
+    /* Desktop Phone Box */
     .phone-column-box {
       display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; padding: 2px 0;
     }
@@ -198,7 +234,7 @@
       justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
     .member-mobile-card {
-      background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 12px;
+      background: #fff; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
       box-shadow: 0 3px 8px rgba(0,0,0,0.1); border-left: 5px solid #2563eb;
     }
     .member-mobile-header {
@@ -207,36 +243,69 @@
     .member-mobile-name { font-size: 15.5px; font-weight: bold; color: #0f172a; }
     .member-mobile-halka { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 11.5px; font-weight: bold; }
 
-    .mobile-phone-group { margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .mobile-phone-card-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; }
-    .mobile-phone-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .mobile-phone-text { font-size: 14px; font-weight: bold; color: #0f172a; font-family: Arial, sans-serif; }
-    .mobile-call-btn { background: #0284c7; color: #fff; padding: 4px 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; }
-    .mobile-wa-btn { display: flex; align-items: center; justify-content: center; gap: 5px; background: #25d366; color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12.5px; font-weight: bold; width: 100%; box-sizing: border-box; }
+    /* Compact Side-by-Side Mobile Actions */
+    .mobile-phone-group { margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .mobile-phone-card-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; }
+    .mobile-phone-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .mobile-phone-text { font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: Arial, sans-serif; }
+    
+    .mobile-action-grid {
+      display: grid; grid-template-columns: 1fr 1.2fr; gap: 6px;
+    }
+    .mobile-call-btn { 
+      background: #0284c7; color: #fff; padding: 6px 10px; border-radius: 6px; 
+      text-decoration: none; font-size: 12px; font-weight: bold; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .mobile-wa-btn { 
+      display: flex; align-items: center; justify-content: center; gap: 4px; 
+      background: #25d366; color: #fff; padding: 6px 10px; border-radius: 6px; 
+      text-decoration: none; font-size: 12px; font-weight: bold; 
+    }
 
-    .mobile-wada-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
+    /* Wada Action Buttons with Scale Feedback */
+    .mobile-wada-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
     .mobile-wada-block { text-align: center; }
     .mobile-wada-title { font-size: 11.5px; font-weight: bold; color: #475569; margin-bottom: 4px; }
     .mobile-btn-toggle-group { display: flex; gap: 4px; justify-content: center; }
     .mobile-touch-btn {
-      flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff;
-      font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 3px;
+      flex: 1; padding: 8px 4px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff;
+      font-size: 12.5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 3px;
+      transition: transform 0.12s ease, background-color 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
     }
-    .mobile-touch-btn.active-yes { background: #16a34a; color: #fff; border-color: #16a34a; }
-    .mobile-touch-btn.active-no { background: #dc2626; color: #fff; border-color: #dc2626; }
+    .mobile-touch-btn:active {
+      transform: scale(0.93);
+    }
+    .mobile-touch-btn.active-yes { background: #16a34a; color: #fff; border-color: #16a34a; box-shadow: 0 2px 6px rgba(22,163,74,0.3); }
+    .mobile-touch-btn.active-no { background: #dc2626; color: #fff; border-color: #dc2626; box-shadow: 0 2px 6px rgba(220,38,38,0.3); }
 
     /* Mobile Remarks Input & Quick Chips */
     .mobile-remarks-box {
       background: #f1f5f9; border-radius: 6px; padding: 8px; border: 1px solid #e2e8f0;
     }
-    .mobile-remarks-label { font-size: 11.5px; font-weight: bold; color: #334155; margin-bottom: 4px; display: block; }
+    .mobile-remarks-label { font-size: 11px; font-weight: bold; color: #334155; margin-bottom: 4px; display: block; }
     .quick-chips-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
     .quick-chip {
       background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 10.5px; padding: 2px 7px; cursor: pointer; color: #1e3a8a; font-weight: 600;
+      transition: transform 0.1s;
     }
-    .quick-chip:hover { background: #e0f2fe; }
+    .quick-chip:active { transform: scale(0.92); }
     .mobile-remarks-input {
-      width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12.5px; outline: none; background: #fff;
+      width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; outline: none; background: #fff;
+    }
+
+    /* Save Confirmation Snack-bar (Optimistic UI) */
+    .sync-toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: rgba(15, 23, 42, 0.94); color: #fff; padding: 9px 18px; border-radius: 30px;
+      font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35); z-index: 999999; opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none; border: 1px solid rgba(255,255,255,0.15);
+    }
+    .sync-toast.show {
+      transform: translateX(-50%) translateY(0); opacity: 1;
     }
 
     /* Report Views */
@@ -257,10 +326,10 @@
     .halqa-rep-item { background: #f8fafc; padding: 6px 8px; border-radius: 6px; }
 
     /* Tables in Other Tabs */
-    .panel-container { max-width: 1100px; margin: 20px auto; background: #fff; padding: 22px 26px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .panel-container { max-width: 1150px; margin: 20px auto; background: #fff; padding: 22px 26px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .custom-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    .custom-table th { background: #1e3a8a; color: #fff; padding: 9px 10px; font-size: 13.5px; border: 1px solid #1e3a8a; text-align: left; }
-    .custom-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 13.5px; }
+    .custom-table th { background: #1e3a8a; color: #fff; padding: 9px 10px; font-size: 13px; border: 1px solid #1e3a8a; text-align: left; }
+    .custom-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 13px; }
 
     .halka-badge-tag { background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin: 2px; display: inline-block; }
 
@@ -281,6 +350,7 @@
     @media (max-width: 768px) {
       .sheet-wrapper { display: none !important; }
       .mobile-cards-container { display: block !important; }
+      .mobile-sticky-progress-header { display: block !important; }
       .desktop-report-table-box { display: none !important; }
       .mobile-report-cards-container { display: block !important; }
       .controls-panel { padding: 8px 12px; gap: 8px; }
@@ -294,7 +364,7 @@
 
     @media print {
       body { background: #fff !important; }
-      .controls-panel, .live-kpi-bar, .nigran-portal-nav, .mobile-cards-container, .mobile-report-cards-container, .search-filter-toolbar { display: none !important; }
+      .controls-panel, .live-kpi-bar, .nigran-portal-nav, .mobile-cards-container, .mobile-report-cards-container, .search-filter-toolbar, .mobile-sticky-progress-header, .sync-toast { display: none !important; }
       .workspace-view { display: none !important; }
       #viewSheets.workspace-view { display: block !important; }
       .sheet-wrapper { display: flex !important; padding: 0 !important; gap: 0 !important; }
@@ -311,9 +381,9 @@
     <div class="super-admin-badge">👑 প্রধান এডমিন: মামুন ভাই</div>
 
     <div class="view-tabs">
-      <button class="tab-btn active" id="tabBtnSheets" onclick="switchView('viewSheets')">📄 ওয়াদা সিট</button>
+      <button class="tab-btn active" id="tabBtnSheets" onclick="switchView('viewSheets')">📄 ওয়াদা সিট</button>
       <button class="tab-btn" id="tabBtnAdmins" onclick="switchView('viewAdmins')">🛡️ এডমিন ও কো-এডমিন হাব</button>
-      <button class="tab-btn" id="tabBtnNigrans" onclick="switchView('viewNigrans')">👥 নিগরান ও হালকা ব্যবস্থাপনা</button>
+      <button class="tab-btn" id="tabBtnNigrans" onclick="switchView('viewNigrans')">👥 নিগরান ও প্রগ্রেস ট্র্যাকিং</button>
       <button class="tab-btn" id="tabBtnReport" onclick="switchView('viewReport')">📊 সার্বিক ওভারভিউ</button>
     </div>
 
@@ -334,7 +404,7 @@
     <div class="nigran-nav-wrap">
       <div class="nigran-id-badge">
         <span>👤</span>
-        <span id="nigranBadgeTitle">নিগরান ভাইয়ের পোর্টাল</span>
+        <span id="nigranBadgeTitle">নিগরান ভাইয়ের পোর্টাল</span>
       </div>
 
       <!-- নিগরানের একাধিক হালকা থাকলে ড্রপডাউন -->
@@ -345,7 +415,7 @@
       </div>
 
       <div class="nigran-tabs">
-        <button class="nigran-tab-btn active" id="nTabBtnList" onclick="switchNigranTab('list')">📱 সদস্য তালিকা ও ওয়াদা</button>
+        <button class="nigran-tab-btn active" id="nTabBtnList" onclick="switchNigranTab('list')">📱 সদস্য তালিকা ও ওয়াদা</button>
         <button class="nigran-tab-btn" id="nTabBtnRep" onclick="switchNigranTab('rep')">📋 আমার হালকার রিপোর্ট</button>
         <button class="nigran-tab-btn" id="nTabBtnOver" onclick="switchNigranTab('over')">🌐 সার্বিক অগ্রগতি</button>
       </div>
@@ -362,9 +432,33 @@
     <div id="fileStatusText" style="color: #4ade80;">Firebase Live Cloud সক্রিয় 🟢</div>
   </div>
 
+  <!-- Sticky Mini Header for Mobile View -->
+  <div class="mobile-sticky-progress-header" id="mobileStickyHeader">
+    <div class="top-line">
+      <span id="stickyHalqaName">📍 হালকা: সমগ্র তালিকা</span>
+      <span id="stickyCompletionRatio" style="color:#38bdf8;">০/০ সম্পন্ন (০%)</span>
+    </div>
+    <div class="mobile-progress-bar-bg">
+      <div class="mobile-progress-bar-fill" id="stickyProgressBarFill"></div>
+    </div>
+  </div>
+
   <!-- Search & Quick Filter Toolbar -->
   <div class="search-filter-toolbar">
-    <input type="text" id="memberSearchInput" class="search-input-box" placeholder="🔍 নাম বা মোবাইল নম্বর দিয়ে দ্রুত খুঁজুন..." oninput="handleMemberSearch(this.value)">
+    <input type="text" id="memberSearchInput" class="search-input-box" placeholder="🔍 নাম বা মোবাইল নম্বর দিয়ে দ্রুত খুঁজুন..." oninput="handleCombinedSearchAndFilter()">
+    
+    <!-- Mobile Filter Chips -->
+    <div class="mobile-quick-filter-chips">
+      <button class="filter-chip-btn active" data-filter="all" onclick="setQuickFilter('all', this)">সবাই (<span id="countChipAll">০</span>)</button>
+      <button class="filter-chip-btn" data-filter="pending" onclick="setQuickFilter('pending', this)">⏳ ওয়াদা বাকি (<span id="countChipPending">০</span>)</button>
+      <button class="filter-chip-btn" data-filter="confirmed" onclick="setQuickFilter('confirmed', this)">✅ নিশ্চিত (হ্যাঁ) (<span id="countChipConfirmed">০</span>)</button>
+    </div>
+  </div>
+
+  <!-- Optimistic UI Toast / Sync Notification -->
+  <div class="sync-toast" id="syncToast">
+    <span id="toastIcon">🟢</span>
+    <span id="toastMessage">ক্লাউডে সংরক্ষিত হয়েছে</span>
   </div>
 
   <!-- ================= VIEW 1: SHEETS & MOBILE CARDS ================= -->
@@ -380,7 +474,7 @@
     <div class="panel-container">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
-          <h2 style="margin:0; color:#1e293b;">এডমিন ও কো-এডমিন হাব (সেন্ট্রাল নিয়ন্ত্রণ)</h2>
+          <h2 style="margin:0; color:#1e293b;">এডমিন ও কো-এডমিন হাব (সেন্ট্রাল নিয়ন্ত্রণ)</h2>
           <p style="margin:4px 0 0; color:#64748b; font-size:13px;">কো-এডমিন নিযুক্ত করুন, যারা সম্পূর্ণ সিস্টেম ওভারভিউ করতে পারবেন।</p>
         </div>
         <button class="btn btn-admin" onclick="openCoAdminModal()">➕ নতুন কো-এডমিন নিযুক্ত করুন</button>
@@ -388,7 +482,7 @@
 
       <div style="margin: 18px 0; background: #fff7ed; border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px;">
         <h3 style="margin:0 0 4px; color:#9a3412;">👑 প্রধান এডমিন (Super Admin): মামুন ভাই</h3>
-        <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব।</p>
+        <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব।</p>
       </div>
 
       <h4 style="margin:16px 0 8px; color:#334155;">নিযুক্ত কো-এডমিন তালিকা (Co-Admins):</h4>
@@ -408,13 +502,13 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 3: NIGRAN & HALQA MANAGEMENT ================= -->
+  <!-- ================= VIEW 3: NIGRAN MANAGEMENT & PROGRESS TRACKING ================= -->
   <div id="viewNigrans" class="workspace-view">
     <div class="panel-container">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
-          <h2 style="margin:0; color:#1e293b;">নিগরান ও হালকা ব্যবস্থাপনা</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরান ভাইয়ের নাম ও ফোন পরিবর্তন, হালকা রদবদল বা একাধিক হালকা বণ্টন করুন[cite: 2]।</p>
+          <h2 style="margin:0; color:#1e293b;">নিগরান ব্যবস্থাপনা ও কাজের অগ্রগতি ট্র্যাকিং</h2>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরানদের কাজের গতিবিধি ট্র্যাক করুন এবং এক ক্লিকে হোয়াটসঅ্যাপে অগ্রগতি রিপোর্ট পাঠান।</p>
         </div>
         <button class="btn btn-upload" onclick="openNigranModal()">➕ নতুন নিগরান যুক্ত করুন</button>
       </div>
@@ -422,12 +516,14 @@
       <table class="custom-table">
         <thead>
           <tr>
-            <th style="width: 40px; text-align:center;">ক্রম</th>
-            <th style="width: 220px;">নিগরানের নাম</th>
-            <th>দায়িত্বপ্রাপ্ত হালকা সমূহ (২-৩ টি হালকা)</th>
-            <th style="width: 140px;">ফোন নম্বর</th>
-            <th style="width: 180px; text-align:center;">হোয়াটসঅ্যাপে লিঙ্ক</th>
-            <th style="width: 130px; text-align:center;">অ্যাকশন</th>
+            <th style="width: 35px; text-align:center;">ক্রম</th>
+            <th style="width: 170px;">নিগরানের নাম</th>
+            <th>দায়িত্বপ্রাপ্ত হালকা</th>
+            <th style="width: 110px;">ফোন</th>
+            <th style="width: 170px; text-align:center;">কাজের অগ্রগতি</th>
+            <th style="width: 140px; text-align:center;">পোর্টাল লিঙ্ক</th>
+            <th style="width: 155px; text-align:center;">অগ্রগতি মেসেজ</th>
+            <th style="width: 100px; text-align:center;">অ্যাকশন</th>
           </tr>
         </thead>
         <tbody id="nigranTableBody"></tbody>
@@ -441,7 +537,7 @@
       <div style="border-bottom:2px solid #e2e8f0; padding-bottom:12px; margin-bottom:16px;">
         <h2 style="margin:0; color:#0f172a; font-size:22px;">৩৯তম বার্ষিক ইজতেমা ২০২৬</h2>
         <h3 style="margin:3px 0; color:#1e3a8a; font-size:17px;">মজলিস আনসারুল্লাহ মোকামী ঢাকা</h3>
-        <p style="margin:4px 0 0; color:#64748b; font-size:13.5px;">উপস্থিতির ওয়াদা সিট ও সার্বিক হালনাগাদ পরিসংখ্যান রিপোর্ট</p>
+        <p style="margin:4px 0 0; color:#64748b; font-size:13.5px;">উপস্থিতির ওয়াদা সিট ও সার্বিক হালনাগাদ পরিসংখ্যান রিপোর্ট</p>
       </div>
 
       <!-- KPI Summary Cards -->
@@ -452,17 +548,17 @@
           <div class="sub" id="repCardHalqaCount">০ টি হালকা</div>
         </div>
         <div class="report-card" style="border-left-color: #16a34a;">
-          <h4>উদ্বোধনী অনুষ্ঠানে মোট ওয়াদা</h4>
+          <h4>উদ্বোধনী অনুষ্ঠানে মোট ওয়াদা</h4>
           <div class="val" style="color: #16a34a;" id="repCardOpenYes">০ জন</div>
           <div class="sub" id="repCardOpenPct">০% উপস্থিতি নিশ্চিত</div>
         </div>
         <div class="report-card" style="border-left-color: #7c3aed;">
-          <h4>সম্পূর্ণ অনুষ্ঠানে মোট ওয়াদা</h4>
+          <h4>সম্পূর্ণ অনুষ্ঠানে মোট ওয়াদা</h4>
           <div class="val" style="color: #7c3aed;" id="repCardCloseYes">০ জন</div>
           <div class="sub" id="repCardClosePct">০% উপস্থিতি নিশ্চিত</div>
         </div>
         <div class="report-card" style="border-left-color: #0d9488;">
-          <h4>উভয় অনুষ্ঠানে নিশ্চিত</h4>
+          <h4>উভয় অনুষ্ঠানে নিশ্চিত</h4>
           <div class="val" style="color: #0d9488;" id="repCardBothYes">০ জন</div>
           <div class="sub">উদ্বোধন ও সমাপনী দুটোতেই</div>
         </div>
@@ -475,13 +571,13 @@
             <tr>
               <th style="width: 40px; text-align:center;">ক্রম</th>
               <th>হালকার নাম</th>
-              <th>দায়িত্বপ্রাপ্ত নিগরান</th>
+              <th>দায়িত্বপ্রাপ্ত নিগরান</th>
               <th style="text-align:center;">মোট সদস্য</th>
               <th style="text-align:center; background:#166534; color:#fff;">উদ্বোধনে (হ্যাঁ)</th>
               <th style="text-align:center; background:#991b1b; color:#fff;">উদ্বোধনে (না)</th>
               <th style="text-align:center; background:#581c87; color:#fff;">সম্পূর্ণে (হ্যাঁ)</th>
               <th style="text-align:center; background:#991b1b; color:#fff;">সম্পূর্ণে (না)</th>
-              <th style="text-align:center; background:#0f766e; color:#fff;">উভয়টিতে (হ্যাঁ)</th>
+              <th style="text-align:center; background:#0f766e; color:#fff;">উভয়টিতে (হ্যাঁ)</th>
             </tr>
           </thead>
           <tbody id="detailedReportTableBody"></tbody>
@@ -508,9 +604,9 @@
         <input type="text" id="inputNigranPhone" placeholder="যেমন: 01711526643">
       </div>
       <div class="form-group">
-        <label>দায়িত্বপ্রাপ্ত হালকা সমূহ (কমা দিয়ে একাধিক লিখুন):</label>
+        <label>দায়িত্বপ্রাপ্ত হালকা সমূহ (কমা দিয়ে একাধিক লিখুন):</label>
         <input type="text" id="inputNigranHalkas" placeholder="যেমন: ধানমন্ডি, উত্তরা">
-        <small style="color:#64748b; display:block; margin-top:4px;">* একাধিক হালকা দিলে এই নিগরান সবগুলো হালকার দায়িত্ব পাবেন[cite: 2]।</small>
+        <small style="color:#64748b; display:block; margin-top:4px;">* একাধিক হালকা দিলে এই নিগরান সবগুলো হালকার দায়িত্ব পাবেন।</small>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
         <button class="btn" style="background:#64748b;" onclick="closeNigranModal()">বাতিল</button>
@@ -582,6 +678,8 @@
     let wadaStateMap = {};
     let globalHalqaPagesMap = {};
     let currentSelectedHalqaFilter = "";
+    let currentQuickFilter = "all"; // 'all', 'pending', 'confirmed'
+    let toastTimeout = null;
 
     // URL Checking for Nigran Mode
     const urlParams = new URLSearchParams(window.location.search);
@@ -593,8 +691,6 @@
     } else {
       activeNid = null;
       document.body.classList.remove('is-nigran-mode');
-      localStorage.removeItem('ijtema_active_nid');
-      sessionStorage.removeItem('ijtema_active_nid');
     }
 
     function toBanglaNum(num) {
@@ -655,7 +751,7 @@
       return false;
     }
 
-    const WA_DEFAULT_MSG = encodeURIComponent("আসসালামু আলাইকুম। মজলিস আনসারুল্লাহ মোকামী ঢাকার ৩৯তম বার্ষিক ইজতেমা আগামী ৬ ও ৭ নভেম্বর ২০২৬ (শুক্র ও শনিবার) দারুত তবলীগ কমপ্লেক্সে অনুষ্ঠিত হবে, ইনশাআল্লাহ (উদ্বোধন: ৬ নভেম্বর, শুক্রবার সকাল ৯:৩০ ঘটিকা)। আপনাকে যথাসময়ে উপস্থিতি থাকতে বিনীত অনুরোধ করা যাচ্ছে।- গণ-সংযোগ কমিটি, ইজতেমা কমিটি, ম.আ. মোকামী, ঢাকা");
+    const WA_DEFAULT_MSG = encodeURIComponent("আসসালামু আলাইকুম। মজলিস আনসারুল্লাহ মোকামী ঢাকার ৩৯তম বার্ষিক ইজতেমা আগামী ৬ ও ৭ নভেম্বর (শুক্র ও শনিবার) দারুত তবলীগ কমপ্লেক্সে অনুষ্ঠিত হবে, ইনশাআল্লাহ (উদ্বোধন: ৬ নভেম্বর, শুক্রবার সকাল ৯:৩০ ঘটিকা)। সম্মানিত সদস্যের উপস্থিতি নিশ্চিত করতে অনুগ্রহ করে আসবেন কি না জানাবেন।");
 
     function getCleanDialNumber(p) {
       let digits = p.replace(/[^0-9]/g, '');
@@ -691,7 +787,7 @@
       `;
     }
 
-    // মোবাইল ফ্রেন্ডলি কার্ডে ফোন
+    // মোবাইল ফ্রেন্ডলি কার্ডে ফোন ও বোতাম
     function formatMobilePhoneButtons(rawPhone) {
       if (!rawPhone) return '<div style="color:#94a3b8; font-size:12px; padding:4px;">কোনো মোবাইল নম্বর নেই</div>';
       const parts = String(rawPhone).trim().split(/[,/;\n|]+/).map(p => p.trim()).filter(Boolean);
@@ -703,14 +799,31 @@
           <div class="mobile-phone-card-box">
             <div class="mobile-phone-row-top">
               <span class="mobile-phone-text">📞 ${p}</span>
-              <a href="tel:+${dialNum}" class="mobile-call-btn">সরাসরি কল</a>
             </div>
-            <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" class="mobile-wa-btn">
-              💬 হোয়াটসঅ্যাপে মেসেজ করুন
-            </a>
+            <div class="mobile-action-grid">
+              <a href="tel:+${dialNum}" class="mobile-call-btn">📞 কল দিন</a>
+              <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" class="mobile-wa-btn">💬 হোয়াটসঅ্যাপ</a>
+            </div>
           </div>
         `;
       }).join('');
+    }
+
+    // Optimistic UI Toast Trigger
+    function showSyncToast(msg = "ক্লাউডে সংরক্ষিত হয়েছে", isSuccess = true) {
+      const toast = document.getElementById('syncToast');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+      if (!toast) return;
+
+      msgEl.innerText = msg;
+      iconEl.innerText = isSuccess ? '🟢' : '⚠️';
+      toast.classList.add('show');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1600);
     }
 
     // ট্যাব স্যুইচার (Admin)
@@ -751,24 +864,35 @@
       });
     }
 
-    // ক্লাউড ডেটাবেজে হ্যাঁ/না টগল সেভ
+    // ক্লাউড ডেটাবেজে হ্যাঁ/না টগল সেভ (Optimistic Update)
     function toggleWada(recKey, type, choice) {
       if (!wadaStateMap[recKey]) wadaStateMap[recKey] = { open: null, close: null, remarks: '' };
       wadaStateMap[recKey][type] = (wadaStateMap[recKey][type] === choice) ? null : choice;
 
-      db.ref('wada_states/' + recKey).set(wadaStateMap[recKey]);
       updateRowUI(recKey);
       refreshLiveKPIs();
+      updateMobileStickyProgress();
+      updateFilterCounts();
+      showSyncToast("তথ্য সংরক্ষিত হয়েছে ✓");
+
+      db.ref('wada_states/' + recKey).set(wadaStateMap[recKey]).catch(err => {
+        showSyncToast("সংরক্ষণ ব্যর্থ! অফলাইন আছেন কি?", false);
+      });
     }
 
     // ক্লাউড ডেটাবেজে মন্তব্য (Remarks) সেভ
     function updateRemarks(recKey, val) {
       if (!wadaStateMap[recKey]) wadaStateMap[recKey] = { open: null, close: null, remarks: '' };
-      wadaStateMap[recKey].remarks = String(val).trim();
+      const trimmed = String(val).trim();
+      if (wadaStateMap[recKey].remarks === trimmed) return;
 
-      db.ref('wada_states/' + recKey + '/remarks').set(wadaStateMap[recKey].remarks);
+      wadaStateMap[recKey].remarks = trimmed;
+      showSyncToast("মন্তব্য সংরক্ষিত হয়েছে ✓");
 
-      // সিঙ্ক ফিল্ড
+      db.ref('wada_states/' + recKey + '/remarks').set(wadaStateMap[recKey].remarks).catch(err => {
+        showSyncToast("মন্তব্য সংরক্ষণ ব্যর্থ!", false);
+      });
+
       const tableInp = document.getElementById(`rem_table_${recKey}`);
       if (tableInp && tableInp.value !== wadaStateMap[recKey].remarks) tableInp.value = wadaStateMap[recKey].remarks;
 
@@ -803,6 +927,8 @@
         Object.keys(wadaStateMap).forEach(k => updateRowUI(k));
         refreshLiveKPIs();
         renderReportView();
+        updateMobileStickyProgress();
+        updateFilterCounts();
       }
     });
 
@@ -862,6 +988,14 @@
         mCloseNo.className = `mobile-touch-btn ${state.close === 'no' ? 'active-no' : ''}`;
       }
 
+      // কার্ডের স্টেট অ্যাট্রিবিউট আপডেট (ফিল্টারিং এর জন্য)
+      const cardEl = document.getElementById(`card_${recKey}`);
+      if (cardEl) {
+        const hasChoice = (state.open !== null && state.open !== undefined) || (state.close !== null && state.close !== undefined);
+        const isConfirmed = state.open === 'yes' || state.close === 'yes';
+        cardEl.setAttribute('data-wada-status', hasChoice ? (isConfirmed ? 'confirmed' : 'decided') : 'pending');
+      }
+
       updatePageSummaryCards();
     }
 
@@ -899,9 +1033,92 @@
       document.getElementById('kpiCloseYes').innerText = toBanglaNum(totalCloseYes);
     }
 
-    // ==============================================================
-    // ইউনিফাইড হালকা ফিল্টারিং (ডেস্কটপ শিট ও মোবাইল কার্ড উভয়ই ফিল্টার হবে)
-    // ==============================================================
+    // মোবাইল স্টিকি মিনি হেডার প্রগ্রেস আপডেট
+    function updateMobileStickyProgress() {
+      const visibleCards = Array.from(document.querySelectorAll('.member-mobile-card'));
+      let total = visibleCards.length;
+      let completed = 0;
+
+      visibleCards.forEach(c => {
+        const key = c.getAttribute('data-reckey');
+        const st = wadaStateMap[key] || {};
+        if ((st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined)) {
+          completed++;
+        }
+      });
+
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      
+      const halqaLabel = currentSelectedHalqaFilter ? `📍 হালকা: ${currentSelectedHalqaFilter}` : '📍 সমগ্র তালিকা';
+      const stickyHName = document.getElementById('stickyHalqaName');
+      const stickyRatio = document.getElementById('stickyCompletionRatio');
+      const stickyFill = document.getElementById('stickyProgressBarFill');
+
+      if (stickyHName) stickyHName.innerText = halqaLabel;
+      if (stickyRatio) stickyRatio.innerText = `${toBanglaNum(completed)}/${toBanglaNum(total)} সম্পন্ন (${toBanglaNum(pct)}%)`;
+      if (stickyFill) stickyFill.style.width = `${pct}%`;
+    }
+
+    // ফিল্টার বাটন ও সার্চের সমন্বিত ফাংশন
+    function setQuickFilter(filterType, btnEl) {
+      currentQuickFilter = filterType;
+      document.querySelectorAll('.filter-chip-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      handleCombinedSearchAndFilter();
+    }
+
+    function handleCombinedSearchAndFilter() {
+      const query = (document.getElementById('memberSearchInput').value || '').trim().toLowerCase();
+
+      document.querySelectorAll('.member-mobile-card').forEach(card => {
+        const text = card.innerText.toLowerCase();
+        const matchesQuery = !query || text.includes(query);
+
+        const status = card.getAttribute('data-wada-status') || 'pending';
+        let matchesFilter = true;
+        if (currentQuickFilter === 'pending') {
+          matchesFilter = (status === 'pending');
+        } else if (currentQuickFilter === 'confirmed') {
+          matchesFilter = (status === 'confirmed');
+        }
+
+        card.style.display = (matchesQuery && matchesFilter) ? 'block' : 'none';
+      });
+
+      // খালি হওয়া গ্রুপের ডিভাইডার লুকিয়ে ফেলা
+      document.querySelectorAll('.mobile-halqa-group').forEach(grp => {
+        const anyVisible = Array.from(grp.querySelectorAll('.member-mobile-card')).some(c => c.style.display !== 'none');
+        grp.style.display = anyVisible ? 'block' : 'none';
+      });
+
+      updateFilterCounts();
+    }
+
+    function updateFilterCounts() {
+      const allCards = Array.from(document.querySelectorAll('.member-mobile-card'));
+      let pendingCount = 0;
+      let confirmedCount = 0;
+
+      allCards.forEach(c => {
+        const key = c.getAttribute('data-reckey');
+        const st = wadaStateMap[key] || {};
+        const hasChoice = (st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined);
+        const isConfirmed = st.open === 'yes' || st.close === 'yes';
+
+        if (!hasChoice) pendingCount++;
+        if (isConfirmed) confirmedCount++;
+      });
+
+      const countChipAll = document.getElementById('countChipAll');
+      const countChipPending = document.getElementById('countChipPending');
+      const countChipConfirmed = document.getElementById('countChipConfirmed');
+
+      if (countChipAll) countChipAll.innerText = toBanglaNum(allCards.length);
+      if (countChipPending) countChipPending.innerText = toBanglaNum(pendingCount);
+      if (countChipConfirmed) countChipConfirmed.innerText = toBanglaNum(confirmedCount);
+    }
+
+    // হালকা ড্রপডাউন পরিবর্তন
     function applyHalqaFilter(selectedHalqa) {
       currentSelectedHalqaFilter = selectedHalqa ? selectedHalqa.trim() : "";
 
@@ -924,15 +1141,9 @@
           grpEl.style.display = 'none';
         }
       });
-    }
 
-    // সার্চ ইনপুট হ্যান্ডলার
-    function handleMemberSearch(query) {
-      const q = query.trim().toLowerCase();
-      document.querySelectorAll('.member-mobile-card').forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = (!q || text.includes(q)) ? 'block' : 'none';
-      });
+      handleCombinedSearchAndFilter();
+      updateMobileStickyProgress();
     }
 
     // পেজ ও মোবাইল কার্ড রেন্ডারিং
@@ -1008,7 +1219,7 @@
             <div class="header-center">
               <h1>৩৯তম বার্ষিক ইজতেমা ২০২৬</h1>
               <h2>মজলিস আনসারুল্লাহ মোকামী ঢাকা</h2>
-              <h3>উপস্থিতির ওয়াদা সিট</h3>
+              <h3>উপস্থিতির ওয়াদা সিট</h3>
             </div>
             <div class="meta-grid">
               <div><strong>তারিখ ও বারঃ</strong> ৬ ও ৭ নভেম্বর ২০২৬, শুক্র ও শনিবার</div>
@@ -1022,7 +1233,7 @@
               <colgroup><col class="col-sl"><col class="col-name"><col class="col-mobile"><col class="col-wada-open"><col class="col-wada-close"><col class="col-remarks"></colgroup>
               <thead>
                 <tr>
-                  <th rowspan="2">ক্রমিক</th><th rowspan="2">সদস্যের নাম</th><th rowspan="2">মোবাইল নম্বর</th><th colspan="2">উপস্থিতির ওয়াদা</th><th rowspan="2">মন্তব্য</th>
+                  <th rowspan="2">ক্রমিক</th><th rowspan="2">সদস্যের নাম</th><th rowspan="2">মোবাইল নম্বর</th><th colspan="2">উপস্থিতির ওয়াদা</th><th rowspan="2">মন্তব্য</th>
                 </tr>
                 <tr><th>উদ্বোধনী অনুষ্ঠান</th><th>সম্পূর্ণ অনুষ্ঠান</th></tr>
               </thead>
@@ -1032,8 +1243,8 @@
           <div style="display:flex; justify-content:space-between; align-items:flex-end;">
             <div class="summary-card">
               <div class="summary-card-row"><span>মোট সদস্যঃ</span> <span class="sum-total-val" style="font-weight:bold;">০ জন</span></div>
-              <div class="summary-card-row"><span>উদ্বোধনে ওয়াদাঃ</span> <span class="sum-open-val" style="color:#15803d; font-weight:bold;">০ জন</span></div>
-              <div class="summary-card-row"><span>সমাপনীতে ওয়াদাঃ</span> <span class="sum-close-val" style="color:#7c3aed; font-weight:bold;">০ জন</span></div>
+              <div class="summary-card-row"><span>উদ্বোধনে ওয়াদাঃ</span> <span class="sum-open-val" style="color:#15803d; font-weight:bold;">০ জন</span></div>
+              <div class="summary-card-row"><span>সমাপনীতে ওয়াদাঃ</span> <span class="sum-close-val" style="color:#7c3aed; font-weight:bold;">০ জন</span></div>
             </div>
             <div style="text-align:center; width:180px;">
               <div style="border-top:1px solid #000; margin-bottom:4px;"></div>
@@ -1052,8 +1263,8 @@
       if (sortedHalqaKeys.length === 0) {
         mobileContainer.innerHTML = `
           <div style="background:#fff; padding:25px; border-radius:12px; text-align:center; margin-top:20px;">
-            <h3 style="color:#b91c1c; margin:0 0 8px;">⚠️ কোনো তথ্য পাওয়া যায়নি</h3>
-            <p style="color:#64748b; font-size:13px; margin:0;">কোনো সদস্য লোড হয়নি অথবা আপনার দায়িত্বপ্রাপ্ত হালকার সাথে মিলছে না।</p>
+            <h3 style="color:#b91c1c; margin:0 0 8px;">⚠️ কোনো তথ্য পাওয়া যায়নি</h3>
+            <p style="color:#64748b; font-size:13px; margin:0;">কোনো সদস্য লোড হয়নি অথবা আপনার দায়িত্বপ্রাপ্ত হালকার সাথে মিলছে না।</p>
           </div>
         `;
       } else {
@@ -1076,8 +1287,16 @@
             const recKey = row._recKey || `rec_${idx}`;
             const st = wadaStateMap[recKey] || { open: null, close: null, remarks: '' };
 
+            const hasChoice = (st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined);
+            const isConfirmed = st.open === 'yes' || st.close === 'yes';
+            const statusAttr = hasChoice ? (isConfirmed ? 'confirmed' : 'decided') : 'pending';
+
             const card = document.createElement('div');
             card.className = 'member-mobile-card';
+            card.id = `card_${recKey}`;
+            card.setAttribute('data-reckey', recKey);
+            card.setAttribute('data-wada-status', statusAttr);
+
             card.innerHTML = `
               <div class="member-mobile-header">
                 <div>
@@ -1117,7 +1336,7 @@
               </div>
 
               <div class="mobile-remarks-box">
-                <span class="mobile-remarks-label">📝 মন্তব্য (ঐচ্ছিক):</span>
+                <span class="mobile-remarks-label">📝 দ্রুত মন্তব্যঃ</span>
                 <div class="quick-chips-row">
                   <span class="quick-chip" onclick="addQuickRemark('${recKey}', 'কল ধরেননি')">+ কল ধরেননি</span>
                   <span class="quick-chip" onclick="addQuickRemark('${recKey}', 'অসুস্থ')">+ অসুস্থ</span>
@@ -1135,11 +1354,15 @@
 
       updatePageSummaryCards();
       refreshLiveKPIs();
+      updateMobileStickyProgress();
+      updateFilterCounts();
       if (currentSelectedHalqaFilter) applyHalqaFilter(currentSelectedHalqaFilter);
     }
 
+    // অ্যাডমিন ভিউতে নিগরানের কাজের অগ্রগতি ও হোয়াটসঅ্যাপ মেসেজ পাঠানো
     function renderNigranTable() {
       const tbody = document.getElementById('nigranTableBody');
+      if (!tbody) return;
       tbody.innerHTML = '';
       const currentOrigin = window.location.origin + window.location.pathname;
 
@@ -1147,24 +1370,72 @@
         const uniqueLink = `${currentOrigin}?nid=${n.id}`;
         const hArr = getHalkasArray(n);
         const halkasText = hArr.length > 0 ? hArr.join(', ') : 'কোনো হালকা নেই';
-        const whatsappMsg = encodeURIComponent(
-          `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমায় আপনার দায়িত্বপ্রাপ্ত হালকার (${halkasText}) সদস্যদের উপস্থিতি ওয়াদা এন্ট্রি করতে নিচের লিংকে ক্লিক করুন:\n${uniqueLink}`
+        
+        // নিগরানের হালকার সদস্যদের প্রগ্রেস হিসাব
+        let totalAssigned = 0;
+        let completedCalls = 0;
+        let confirmedYes = 0;
+
+        rawRecordsData.forEach((rec, rIdx) => {
+          const h = rec.halqa || 'অনির্ধারিত';
+          if (hArr.some(target => isHalkaMatched(h, target))) {
+            totalAssigned++;
+            const st = wadaStateMap[`rec_${rIdx}`] || {};
+            if ((st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined)) {
+              completedCalls++;
+            }
+            if (st.open === 'yes' || st.close === 'yes') {
+              confirmedYes++;
+            }
+          }
+        });
+
+        const progressPct = totalAssigned > 0 ? Math.round((completedCalls / totalAssigned) * 100) : 0;
+
+        // নিগরানকে পোর্টাল লিংক পাঠানোর বার্তা
+        const portalMsg = encodeURIComponent(
+          `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমায় আপনার দায়িত্বপ্রাপ্ত হালকার (${halkasText}) সদস্যদের উপস্থিতি ওয়াদা এন্ট্রি করতে নিচের লিংকে ক্লিক করুন:\n${uniqueLink}`
         );
-        const waUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
+        const waPortalUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${portalMsg}`;
+
+        // অ্যাডমিন থেকে নিগরানকে কাজের অগ্রগতি রিপোর্ট পাঠানোর বার্তা
+        const progressReportMsg = encodeURIComponent(
+          `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমা ২০২৬ এর উপস্থিতি ওয়াদা কালেকশন অগ্রগতি রিপোর্ট:\n\n` +
+          `🚩 আপনার হালকা: ${halkasText}\n` +
+          `👥 মোট সদস্য: ${totalAssigned} জন\n` +
+          `📞 সম্পন্ন যোগাযোগ: ${completedCalls} জন (${progressPct}% সম্পন্ন)\n` +
+          `✅ উপস্থিতি নিশ্চিত: ${confirmedYes} জন\n` +
+          `⏳ যোগাযোগ বাকি: ${totalAssigned - completedCalls} জন\n\n` +
+          `বাকি সদস্যদের সাথে দ্রুত যোগাযোগ করে ওয়াদা আপডেট করার অনুরোধ জানাচ্ছি। জাযাকাল্লাহ!\n- ইজতেমা সেন্ট্রাল অ্যাডমিন`
+        );
+        const waProgressUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${progressReportMsg}`;
+
         const halkaChips = hArr.map(h => `<span class="halka-badge-tag">${h}</span>`).join(' ');
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="text-align:center; font-weight:bold;">${toBanglaNum(idx + 1)}</td>
           <td><strong>${n.name}</strong></td>
-          <td>${halkaChips || '<span style="color:#94a3b8;">হালকা নির্ধারিত হয়নি</span>'}</td>
-          <td style="font-family:Arial;">${n.phone}</td>
-          <td style="text-align:center;">
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">📲 লিঙ্ক পাঠান (WhatsApp)</a>
+          <td>${halkaChips || '<span style="color:#94a3b8;">হালকা নির্ধারিত হয়নি</span>'}</td>
+          <td style="font-family:Arial; font-weight:bold;">${n.phone}</td>
+          <td>
+            <div style="font-size:11.5px; font-weight:bold; display:flex; justify-content:space-between; margin-bottom:3px;">
+              <span>${toBanglaNum(completedCalls)}/${toBanglaNum(totalAssigned)} জন</span>
+              <span style="color:#0284c7;">${toBanglaNum(progressPct)}%</span>
+            </div>
+            <div style="width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
+              <div style="width:${progressPct}%; height:100%; background:${progressPct === 100 ? '#10b981' : '#0284c7'};"></div>
+            </div>
           </td>
           <td style="text-align:center;">
-            <button class="btn btn-upload" style="padding:3px 8px; font-size:11px;" onclick="editNigran('${n.id}')">✏️ এডিট</button>
-            <button class="btn" style="background:#dc2626; padding:3px 8px; font-size:11px;" onclick="deleteNigran('${n.id}')">🗑️</button>
+            <a href="${waPortalUrl}" target="_blank" class="btn btn-whatsapp" style="padding:4px 8px; font-size:11px;">📲 পোর্টাল লিঙ্ক</a>
+          </td>
+          <td style="text-align:center;">
+            <a href="${waProgressUrl}" target="_blank" class="btn" style="background:#059669; padding:4px 8px; font-size:11px;">📊 অগ্রগতি পাঠান</a>
+          </td>
+          <td style="text-align:center;">
+            <button class="btn btn-upload" style="padding:3px 6px; font-size:11px;" onclick="editNigran('${n.id}')">✏️</button>
+            <button class="btn" style="background:#dc2626; padding:3px 6px; font-size:11px;" onclick="deleteNigran('${n.id}')">🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1179,7 +1450,7 @@
       coAdminList.forEach((admin, idx) => {
         const adminLink = `${currentOrigin}`;
         const whatsappMsg = encodeURIComponent(
-          `আসসালামু আলাইকুম ${admin.name} ভাই,\nআপনাকে ৩৯তম বার্ষিক ইজতেমার কো-এডমিন (Co-Admin) হিসেবে যুক্ত করা হয়েছে। সেন্ট্রাল সিস্টেম পরিচালনার জন্য এই লিংকে প্রবেশ করুন:\n${adminLink}`
+          `আসসালামু আলাইকুম ${admin.name} ভাই,\nআপনাকে ৩৯তম বার্ষিক ইজতেমার কো-এডমিন (Co-Admin) হিসেবে যুক্ত করা হয়েছে। সেন্ট্রাল সিস্টেম পরিচালনার জন্য এই লিংকে প্রবেশ করুন:\n${adminLink}`
         );
         const waUrl = `https://wa.me/88${admin.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
 
@@ -1291,7 +1562,7 @@
             </div>
           </div>
           <div style="margin-top:8px; background:#ecfdf5; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; color:#065f46; display:flex; justify-content:space-between;">
-            <span>উভয় অনুষ্ঠানে নিশ্চিত:</span>
+            <span>উভয় অনুষ্ঠানে নিশ্চিত:</span>
             <span>${toBanglaNum(hBothYes)} জন</span>
           </div>
         `;
@@ -1320,8 +1591,8 @@
 
       const openPct = grandTotalMembers > 0 ? Math.round((grandOpenYes / grandTotalMembers) * 100) : 0;
       const closePct = grandTotalMembers > 0 ? Math.round((grandCloseYes / grandTotalMembers) * 100) : 0;
-      document.getElementById('repCardOpenPct').innerText = `${toBanglaNum(openPct)}% উপস্থিতি ওয়াদা`;
-      document.getElementById('repCardClosePct').innerText = `${toBanglaNum(closePct)}% উপস্থিতি ওয়াদা`;
+      document.getElementById('repCardOpenPct').innerText = `${toBanglaNum(openPct)}% উপস্থিতি ওয়াদা`;
+      document.getElementById('repCardClosePct').innerText = `${toBanglaNum(closePct)}% উপস্থিতি ওয়াদা`;
     }
 
     // Modal Control: Nigran
@@ -1365,7 +1636,7 @@
 
       db.ref('nigrans/' + id).set(updatedNigran).then(() => {
         closeNigranModal();
-        alert('নিগরান ও হালকা সফলভাবে আপডেট হয়েছে!');
+        showSyncToast('নিগরান ও হালকা আপডেট হয়েছে ✓');
       });
     }
 
@@ -1397,7 +1668,7 @@
       const newAdmin = { id, name, phone, addedAt: new Date().toISOString() };
       db.ref('co_admins/' + id).set(newAdmin).then(() => {
         closeCoAdminModal();
-        alert('কো-এডমিন সফলভাবে নিযুক্ত করা হয়েছে!');
+        showSyncToast('কো-এডমিন সফলভাবে নিযুক্ত করা হয়েছে ✓');
       });
     }
 
@@ -1423,7 +1694,7 @@
         if (i > 0) pdf.addPage();
         pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
       }
-      pdf.save(`ওয়াদা_সিট_${sanitizeFileName(halqaName)}.pdf`);
+      pdf.save(`ওয়াদা_সিট_${sanitizeFileName(halqaName)}.pdf`);
     }
 
     async function downloadAllHalqasZip() {
@@ -1442,13 +1713,13 @@
           if (p > 0) pdf.addPage();
           pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
         }
-        zip.file(`ওয়াদা_সিট_${sanitizeFileName(hName)}.pdf`, pdf.output('blob'));
+        zip.file(`ওয়াদা_সিট_${sanitizeFileName(hName)}.pdf`, pdf.output('blob'));
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(zipBlob);
-      a.download = 'সকল_হালকা_আলাদা_ওয়াদা_সিট_PDFs.zip';
+      a.download = 'সকল_হালকা_আলাদা_ওয়াদা_সিট_PDFs.zip';
       a.click();
       document.getElementById('progressOverlay').style.display = 'none';
     }
@@ -1463,7 +1734,7 @@
         if (i > 0) pdf.addPage();
         pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
       }
-      pdf.save('ইজতেমা_ওয়াদা_সিট_সকল_হালকা_যৌথ.pdf');
+      pdf.save('ইজতেমা_ওয়াদা_সিট_সকল_হালকা_যৌথ.pdf');
     }
 
     // কলাম ডিটেকশন
@@ -1564,7 +1835,6 @@
       if (currentNigran) {
         document.body.classList.add('is-nigran-mode');
         const hArr = getHalkasArray(currentNigran);
-        const halkasLabel = hArr.join(', ');
         document.getElementById('nigranBadgeTitle').innerText = `${currentNigran.name}`;
 
         // নিগরানের একাধিক হালকা থাকলে ড্রপডাউন প্রস্তুত
@@ -1649,7 +1919,7 @@
         try {
           const raw = parseDBF(evt.target.result);
           if (!raw || raw.length === 0) {
-            alert('DBF ফাইলে কোনো রেকর্ড পাওয়া যায়নি!');
+            alert('DBF ফাইলে কোনো রেকর্ড পাওয়া যায়নি!');
             return;
           }
 
@@ -1662,10 +1932,10 @@
           }));
 
           db.ref('members').set(rawRecordsData);
-          alert(`সফল! মোট ${rawRecordsData.length} জন সদস্যের সঠিক তথ্য ফায়ারবেসে সংরক্ষিত হয়েছে।\n(নাম কলাম: [${nameKey}], মোবাইল: [${mobileKey}])`);
+          showSyncToast(`মোট ${rawRecordsData.length} জন সদস্যের তথ্য আপলোড হয়েছে ✓`);
         } catch (err) {
           console.error(err);
-          alert('DBF ফাইল প্রসেস করতে সমস্যা হয়েছে!');
+          alert('DBF ফাইল প্রসেস করতে সমস্যা হয়েছে!');
         }
       };
       reader.readAsArrayBuffer(file);
