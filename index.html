@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>৩৯তম বার্ষিক ইজতেমা - উপস্থিতির ওয়াদা কালেকশন সিস্টেম</title>
-  
+
   <!-- CDN Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-  <!-- Google Firebase SDK -->
+  <!-- Google Firebase SDK (Auth যুক্ত করা হয়েছে) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <style>
@@ -264,19 +265,19 @@
     .mobile-phone-card-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; }
     .mobile-phone-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .mobile-phone-text { font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: Arial, sans-serif; }
-    
+
     .mobile-action-grid {
       display: grid; grid-template-columns: 1fr 1.2fr; gap: 6px;
     }
-    .mobile-call-btn { 
-      background: #0284c7; color: #fff; padding: 6px 10px; border-radius: 6px; 
+    .mobile-call-btn {
+      background: #0284c7; color: #fff; padding: 6px 10px; border-radius: 6px;
       text-decoration: none; font-size: 12px; font-weight: bold; text-align: center;
       display: flex; align-items: center; justify-content: center; gap: 4px;
     }
-    .mobile-wa-btn { 
-      display: flex; align-items: center; justify-content: center; gap: 4px; 
-      background: #25d366; color: #fff; padding: 6px 10px; border-radius: 6px; 
-      text-decoration: none; font-size: 12px; font-weight: bold; 
+    .mobile-wa-btn {
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      background: #25d366; color: #fff; padding: 6px 10px; border-radius: 6px;
+      text-decoration: none; font-size: 12px; font-weight: bold;
     }
 
     /* Wada Action Buttons with Scale Feedback */
@@ -356,6 +357,9 @@
     .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #374151; }
     .form-group input { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; }
 
+    /* Login overlay (opaque so nothing shows behind it) */
+    #loginModal { background: #0f172a; z-index: 9999999; }
+
     /* Progress Overlay */
     .progress-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); z-index: 999999; align-items: center; justify-content: center; }
     .progress-box { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 24px 32px; border-radius: 12px; width: 420px; text-align: center; }
@@ -405,6 +409,13 @@
 
     <label class="btn btn-upload">📁 .DBF ফাইল আপলোড <input type="file" id="dbfFileInput" accept=".dbf"></label>
 
+    <!-- Backup Download o Recover Buttons -->
+    <button type="button" class="btn" style="background:#059669;" onclick="downloadWadaBackup()">💾 ব্যাকআপ (JSON)</button>
+    <label class="btn" style="background:#d97706; cursor:pointer;">
+      📥 রিকভার (JSON)
+      <input type="file" id="backupFileInput" accept=".json">
+    </label>
+
     <select id="halqaSelect" class="halqa-dropdown" onchange="applyHalqaFilter(this.value)">
       <option value="">সকল হালকা প্রদর্শন</option>
     </select>
@@ -413,6 +424,7 @@
     <button class="btn btn-zip" onclick="downloadAllHalqasZip()">📦 সব হালকা ZIP</button>
     <button class="btn btn-all-pdf" onclick="downloadCombinedPDF()">📑 যৌথ PDF</button>
     <button class="btn" style="background:#4b5563;" onclick="window.print()">🖨️ প্রিন্ট</button>
+    <button class="btn" style="background:#6b7280;" onclick="adminLogout()">🚪 লগআউট</button>
   </div>
 
   <!-- Dedicated Nigran Mobile Top Portal (Shown Only in Nigran Mode) -->
@@ -445,7 +457,7 @@
       <div class="kpi-badge success"><span>উদ্বোধনে (হ্যাঁ)ঃ</span> <b id="kpiOpenYes">০</b></div>
       <div class="kpi-badge purple"><span>সম্পূর্ণে (হ্যাঁ)ঃ</span> <b id="kpiCloseYes">০</b></div>
     </div>
-    <div id="fileStatusText" style="color: #4ade80;">Firebase Live Cloud সক্রিয় 🟢</div>
+    <div id="fileStatusText" style="color: #4ade80;">Firebase Live Cloud সংযোগ হচ্ছে... 🟡</div>
   </div>
 
   <!-- Sticky Mini Header for Mobile View -->
@@ -462,7 +474,7 @@
   <!-- Search & Quick Filter Toolbar -->
   <div class="search-filter-toolbar">
     <input type="text" id="memberSearchInput" class="search-input-box" placeholder="🔍 নাম বা মোবাইল নম্বর দিয়ে দ্রুত খুঁজুন..." oninput="handleCombinedSearchAndFilter()">
-    
+
     <!-- Mobile Filter Chips -->
     <div class="mobile-quick-filter-chips">
       <button class="filter-chip-btn active" data-filter="all" onclick="setQuickFilter('all', this)">সবাই (<span id="countChipAll">০</span>)</button>
@@ -474,7 +486,7 @@
   <!-- Optimistic UI Toast / Sync Notification -->
   <div class="sync-toast" id="syncToast">
     <span id="toastIcon">🟢</span>
-    <span id="toastMessage">ক্লাউডে সংরক্ষিত হয়েছে</span>
+    <span id="toastMessage">ক্লাউডে সংরক্ষিত হয়েছে</span>
   </div>
 
   <!-- ================= VIEW 1: SHEETS & MOBILE CARDS ================= -->
@@ -491,14 +503,14 @@
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
           <h2 style="margin:0; color:#1e293b;">এডমিন ও কো-এডমিন হাব (সেন্ট্রাল নিয়ন্ত্রণ)</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">কো-এডমিন নিযুক্ত করুন, যারা সম্পূর্ণ সিস্টেম ওভারভিউ করতে পারবেন।</p>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">কো-এডমিন নিযুক্ত করুন, যারা সম্পূর্ণ সিস্টেম ওভারভিউ করতে পারবেন.</p>
         </div>
         <button class="btn btn-admin" onclick="openCoAdminModal()">➕ নতুন কো-এডমিন নিযুক্ত করুন</button>
       </div>
 
       <div style="margin: 18px 0; background: #fff7ed; border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px;">
         <h3 style="margin:0 0 4px; color:#9a3412;">👑 প্রধান এডমিন (Super Admin): মামুন ভাই</h3>
-        <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব।</p>
+        <p style="margin:0; font-size:13px; color:#c2410c;">সম্পূর্ণ সিস্টেম নিয়ন্ত্রণ, ডেটা আপলোড, কো-এডমিন নিযুক্তি ও নিগরান রদবদলের একক কর্তৃত্ব.</p>
       </div>
 
       <h4 style="margin:16px 0 8px; color:#334155;">নিযুক্ত কো-এডমিন তালিকা (Co-Admins):</h4>
@@ -524,7 +536,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <div>
           <h2 style="margin:0; color:#1e293b;">নিগরান ব্যবস্থাপনা ও কাজের অগ্রগতি ট্র্যাকিং</h2>
-          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরানদের কাজের গতিবিধি ট্র্যাক করুন এবং এক ক্লিকে হোয়াটসঅ্যাপে অগ্রগতি রিপোর্ট পাঠান।</p>
+          <p style="margin:4px 0 0; color:#64748b; font-size:13px;">নিগরানদের কাজের গতিবিধি ট্র্যাক করুন এবং এক ক্লিকে হোয়াটসঅ্যাপে অগ্রগতি রিপোর্ট পাঠান.</p>
         </div>
         <button class="btn btn-upload" onclick="openNigranModal()">➕ নতুন নিগরান যুক্ত করুন</button>
       </div>
@@ -566,12 +578,12 @@
         <div class="report-card" style="border-left-color: #16a34a;">
           <h4>উদ্বোধনী অনুষ্ঠানে মোট ওয়াদা</h4>
           <div class="val" style="color: #16a34a;" id="repCardOpenYes">০ জন</div>
-          <div class="sub" id="repCardOpenPct">০% উপস্থিতি নিশ্চিত</div>
+          <div class="sub" id="repCardOpenPct">০% উপস্থিতি ওয়াদা</div>
         </div>
         <div class="report-card" style="border-left-color: #7c3aed;">
           <h4>সম্পূর্ণ অনুষ্ঠানে মোট ওয়াদা</h4>
           <div class="val" style="color: #7c3aed;" id="repCardCloseYes">০ জন</div>
-          <div class="sub" id="repCardClosePct">০% উপস্থিতি নিশ্চিত</div>
+          <div class="sub" id="repCardClosePct">০% উপস্থিতি ওয়াদা</div>
         </div>
         <div class="report-card" style="border-left-color: #0d9488;">
           <h4>উভয় অনুষ্ঠানে নিশ্চিত</h4>
@@ -613,16 +625,16 @@
       <input type="hidden" id="editNigranId">
       <div class="form-group">
         <label>নিগরানের নামঃ</label>
-        <input type="text" id="inputNigranName" placeholder="যেমন: জনাব শফিক আহমদ খান">
+        <input type="text" id="inputNigranName" maxlength="80" placeholder="যেমন: জনাব শফিক আহমদ খান">
       </div>
       <div class="form-group">
         <label>ফোন নম্বরঃ</label>
-        <input type="text" id="inputNigranPhone" placeholder="যেমন: 01711526643">
+        <input type="text" id="inputNigranPhone" maxlength="20" placeholder="যেমন: 01711526643">
       </div>
       <div class="form-group">
         <label>দায়িত্বপ্রাপ্ত হালকা সমূহ (কমা দিয়ে একাধিক লিখুন):</label>
         <input type="text" id="inputNigranHalkas" placeholder="যেমন: ধানমন্ডি, উত্তরা">
-        <small style="color:#64748b; display:block; margin-top:4px;">* একাধিক হালকা দিলে এই নিগরান সবগুলো হালকার দায়িত্ব পাবেন।</small>
+        <small style="color:#64748b; display:block; margin-top:4px;">* একাধিক হালকা দিলে এই নিগরান সবগুলো হালকার দায়িত্ব পাবেন.</small>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
         <button class="btn" style="background:#64748b;" onclick="closeNigranModal()">বাতিল</button>
@@ -637,15 +649,35 @@
       <h3 style="margin:0 0 14px; font-size:18px;">নতুন কো-এডমিন নিযুক্ত করুন</h3>
       <div class="form-group">
         <label>কো-এডমিনের নামঃ</label>
-        <input type="text" id="inputCoAdminName" placeholder="যেমন: জনাব তারেক হোসেন">
+        <input type="text" id="inputCoAdminName" maxlength="80" placeholder="যেমন: জনাব তারেক হোসেন">
       </div>
       <div class="form-group">
         <label>ফোন নম্বরঃ</label>
-        <input type="text" id="inputCoAdminPhone" placeholder="যেমন: 01710877567">
+        <input type="text" id="inputCoAdminPhone" maxlength="20" placeholder="যেমন: 01710877567">
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
         <button class="btn" style="background:#64748b;" onclick="closeCoAdminModal()">বাতিল</button>
         <button class="btn btn-admin" onclick="saveCoAdminData()">নিযুক্ত করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Admin Login -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal-card">
+      <h3 style="margin:0 0 6px; font-size:18px;">🔐 এডমিন লগইন</h3>
+      <p style="margin:0 0 14px; font-size:12.5px; color:#64748b;">ইজতেমা সেন্ট্রাল সিস্টেমে প্রবেশ করতে এডমিন ইমেইল ও পাসওয়ার্ড দিন।</p>
+      <div class="form-group">
+        <label>ইমেইলঃ</label>
+        <input type="email" id="loginEmail" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>পাসওয়ার্ডঃ</label>
+        <input type="password" id="loginPass" autocomplete="current-password">
+      </div>
+      <div id="loginError" style="color:#b91c1c; font-size:12.5px; min-height:18px;"></div>
+      <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+        <button class="btn btn-upload" id="loginBtn" onclick="adminLogin()">লগইন</button>
       </div>
     </div>
   </div>
@@ -674,8 +706,10 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const auth = firebase.auth();
 
     const ROWS_PER_PAGE = 16;
+    const MAX_REMARK_LEN = 300;
 
     const defaultNigranList = [
       { id: "1", name: "জনাব শফিক আহমদ খান", halkas: ["ধানমন্ডি", "উত্তরা"], phone: "01711526643" },
@@ -689,6 +723,7 @@
     ];
 
     let nigranList = defaultNigranList;
+    let nigransLoaded = false;
     let coAdminList = [];
     let rawRecordsData = [];
     let wadaStateMap = {};
@@ -696,8 +731,11 @@
     let currentSelectedHalqaFilter = "";
     let currentQuickFilter = "all"; // 'all', 'pending', 'confirmed'
     let toastTimeout = null;
+    let isAdmin = false;
+    let listenersStarted = false;
+    let reportScopeMine = false; // নিগরান মোডে রিপোর্ট ট্যাবের স্কোপ মনে রাখে
 
-    // URL Checking for Nigran Mode
+    // URL Checking for Nigran Mode (নিগরানদের বিদ্যমান লিংক হুবহু একই থাকছে)
     const urlParams = new URLSearchParams(window.location.search);
     let activeNid = null;
 
@@ -707,6 +745,17 @@
     } else {
       activeNid = null;
       document.body.classList.remove('is-nigran-mode');
+    }
+
+    // ---------- Security helpers ----------
+    function escapeHtml(s) {
+      if (s === undefined || s === null) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function toBanglaNum(num) {
@@ -752,16 +801,26 @@
       "মিরপুর": ["mirpur"]
     };
 
+    // অ্যালিয়াসগুলো একবারই নরমালাইজ করে রাখা হয় (আগে হাইফেনওয়ালা অ্যালিয়াস কখনো মিলত না)
+    const HALQA_MAP_NORM = Object.entries(HALQA_MAP).map(([bn, aliases]) => ({
+      bn: normalizeStr(bn),
+      aliases: aliases.map(normalizeStr)
+    }));
+
     function isHalkaMatched(halkaA, halkaB) {
       const a = normalizeStr(halkaA);
       const b = normalizeStr(halkaB);
       if (!a || !b) return false;
-      if (a === b || a.includes(b) || b.includes(a)) return true;
+      if (a === b) return true;
 
-      for (const [bnName, aliases] of Object.entries(HALQA_MAP)) {
-        const normBn = normalizeStr(bnName);
-        const matchA = a.includes(normBn) || normBn.includes(a) || aliases.some(alias => a.includes(alias));
-        const matchB = b.includes(normBn) || normBn.includes(b) || aliases.some(alias => b.includes(alias));
+      // ছোট নাম বড় নামের ভেতরে থাকলে মিলবে, তবে অন্তত ৪ অক্ষর হতে হবে (ভুল ম্যাচ কমাতে)
+      const shortS = a.length <= b.length ? a : b;
+      const longS = a.length <= b.length ? b : a;
+      if (shortS.length >= 4 && longS.includes(shortS)) return true;
+
+      for (const entry of HALQA_MAP_NORM) {
+        const matchA = a.includes(entry.bn) || entry.aliases.some(al => a.includes(al));
+        const matchB = b.includes(entry.bn) || entry.aliases.some(al => b.includes(al));
         if (matchA && matchB) return true;
       }
       return false;
@@ -770,7 +829,7 @@
     const WA_DEFAULT_MSG = encodeURIComponent("আসসালামু আলাইকুম। মজলিস আনসারুল্লাহ মোকামী ঢাকার ৩৯তম বার্ষিক ইজতেমা আগামী ৬ ও ৭ নভেম্বর (শুক্র ও শনিবার) দারুত তবলীগ কমপ্লেক্সে অনুষ্ঠিত হবে, ইনশাআল্লাহ (উদ্বোধন: ৬ নভেম্বর, শুক্রবার সকাল ৯:৩০ ঘটিকা)। সম্মানিত সদস্যের উপস্থিতি নিশ্চিত করতে অনুগ্রহ করে আসবেন কি না জানাবেন।");
 
     function getCleanDialNumber(p) {
-      let digits = p.replace(/[^0-9]/g, '');
+      let digits = String(p).replace(/[^0-9]/g, '');
       if (digits.startsWith('880')) return digits;
       if (digits.startsWith('01')) return '88' + digits;
       if (digits.startsWith('1')) return '880' + digits;
@@ -789,9 +848,9 @@
             const dialNum = getCleanDialNumber(p);
             return `
               <div class="phone-item-row">
-                <span class="phone-number-text">${p}</span>
+                <span class="phone-number-text">${escapeHtml(p)}</span>
                 <a href="tel:+${dialNum}" class="call-btn-mini" title="কল করুন">📞</a>
-                <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" class="wa-msg-mini-link" title="হোয়াটসঅ্যাপে মেসেজ">💬</a>
+                <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" rel="noopener" class="wa-msg-mini-link" title="হোয়াটসঅ্যাপে মেসেজ">💬</a>
               </div>
             `;
           }).join('')}
@@ -810,11 +869,11 @@
         return `
           <div class="mobile-phone-card-box">
             <div class="mobile-phone-row-top">
-              <span class="mobile-phone-text">📞 ${p}</span>
+              <span class="mobile-phone-text">📞 ${escapeHtml(p)}</span>
             </div>
             <div class="mobile-action-grid">
               <a href="tel:+${dialNum}" class="mobile-call-btn">📞 কল দিন</a>
-              <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" class="mobile-wa-btn">💬 হোয়াটসঅ্যাপ</a>
+              <a href="https://wa.me/${dialNum}?text=${WA_DEFAULT_MSG}" target="_blank" rel="noopener" class="mobile-wa-btn">💬 হোয়াটসঅ্যাপ</a>
             </div>
           </div>
         `;
@@ -822,7 +881,7 @@
     }
 
     // Optimistic UI Toast Trigger
-    function showSyncToast(msg = "ক্লাউডে সংরক্ষিত হয়েছে", isSuccess = true) {
+    function showSyncToast(msg = "ক্লাউডে সংরক্ষিত হয়েছে", isSuccess = true) {
       const toast = document.getElementById('syncToast');
       const msgEl = document.getElementById('toastMessage');
       const iconEl = document.getElementById('toastIcon');
@@ -838,6 +897,100 @@
       }, 1600);
     }
 
+    // ==========================================
+    // Authentication (Admin = Email/Password, Nigran = Anonymous)
+    // ==========================================
+    function getCurrentNigran() {
+      return activeNid ? nigranList.find(n => String(n.id) === String(activeNid)) : null;
+    }
+
+    function actorLabel() {
+      if (isAdmin) return 'admin';
+      const n = getCurrentNigran();
+      return (n && n.name ? n.name : 'nigran').slice(0, 90);
+    }
+
+    function setStatusText(txt) {
+      const el = document.getElementById('fileStatusText');
+      if (el) el.innerText = txt;
+    }
+
+    function showLogin(msg) {
+      document.getElementById('loginModal').style.display = 'flex';
+      document.getElementById('loginError').innerText = msg || '';
+      document.getElementById('loginBtn').disabled = false;
+    }
+    function hideLogin() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    function adminLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      if (!email || !pass) {
+        document.getElementById('loginError').innerText = 'ইমেইল ও পাসওয়ার্ড দিন।';
+        return;
+      }
+      document.getElementById('loginBtn').disabled = true;
+      document.getElementById('loginError').innerText = '';
+      auth.signInWithEmailAndPassword(email, pass).catch(err => {
+        document.getElementById('loginBtn').disabled = false;
+        document.getElementById('loginError').innerText = 'লগইন ব্যর্থ! ইমেইল বা পাসওয়ার্ড সঠিক নয়।';
+      });
+    }
+
+    function adminLogout() {
+      auth.signOut().then(() => location.reload());
+    }
+
+    document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
+    document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
+
+    // ⚠️ শুধু টেস্টিংয়ের জন্য: true থাকলে লগইন ছাড়াই এডমিন প্যানেল খুলবে।
+    // লাইভে দেওয়ার আগে অবশ্যই false করুন (এবং Firebase Rules প্রকাশ করুন)।
+    const TEST_MODE = true;
+
+    auth.onAuthStateChanged(user => {
+      if (TEST_MODE) {
+        isAdmin = !activeNid;
+        hideLogin();
+        startListeners();
+        setStatusText('⚠️ টেস্ট মোড চালু (লগইন বন্ধ) 🟡');
+        return;
+      }
+      if (activeNid) {
+        // নিগরান পোর্টাল: বেনামি (anonymous) সাইন-ইন স্বয়ংক্রিয়ভাবে হয়, নিগরানকে কিছু করতে হয় না
+        if (!user) {
+          auth.signInAnonymously().catch(err => {
+            console.error(err);
+            setStatusText('সংযোগ ব্যর্থ! পেজ রিফ্রেশ করুন 🔴');
+            showSyncToast('সংযোগ ব্যর্থ! ইন্টারনেট চেক করুন', false);
+          });
+          return;
+        }
+        isAdmin = false;
+        startListeners();
+      } else {
+        // এডমিন প্যানেল: ইমেইল লগইন + /admins/<uid> চেক
+        if (!user || user.isAnonymous) { showLogin(); return; }
+        db.ref('admins/' + user.uid).once('value').then(snap => {
+          if (snap.val() === true) {
+            isAdmin = true;
+            hideLogin();
+            startListeners();
+          } else {
+            auth.signOut();
+            showLogin('এই অ্যাকাউন্টের এডমিন অনুমতি নেই।');
+          }
+        }).catch(() => {
+          auth.signOut();
+          showLogin('এডমিন যাচাই করা যায়নি। আবার চেষ্টা করুন।');
+        });
+      }
+    });
+
+    if (!activeNid && !TEST_MODE) showLogin();
+
     // ট্যাব স্যুইচার (Admin)
     function switchView(viewId) {
       document.querySelectorAll('.workspace-view').forEach(v => v.classList.remove('active'));
@@ -846,7 +999,7 @@
       if (viewId === 'viewSheets') document.getElementById('tabBtnSheets').classList.add('active');
       if (viewId === 'viewAdmins') { document.getElementById('tabBtnAdmins').classList.add('active'); renderCoAdminTable(); }
       if (viewId === 'viewNigrans') { document.getElementById('tabBtnNigrans').classList.add('active'); renderNigranTable(); }
-      if (viewId === 'viewReport') { document.getElementById('tabBtnReport').classList.add('active'); renderReportView(); }
+      if (viewId === 'viewReport') { document.getElementById('tabBtnReport').classList.add('active'); renderReportView(false); }
     }
 
     // নিগরান ট্যাব স্যুইচার (Nigran Mode)
@@ -876,96 +1029,142 @@
       });
     }
 
-    // ক্লাউড ডেটাবেজে হ্যাঁ/না টগল সেভ (Optimistic Update)
+    // ক্লাউডে হ্যাঁ/না টগল (শুধু পরিবর্তিত ফিল্ড আপডেট হয়, তাই দুজনের কাজ একে অপরকে মুছে দেয় না)
     function toggleWada(recKey, type, choice) {
+      if (!/^rec_\d+$/.test(recKey) || (type !== 'open' && type !== 'close')) return;
       if (!wadaStateMap[recKey]) wadaStateMap[recKey] = { open: null, close: null, remarks: '' };
-      wadaStateMap[recKey][type] = (wadaStateMap[recKey][type] === choice) ? null : choice;
+      const newVal = (wadaStateMap[recKey][type] === choice) ? null : choice;
+      wadaStateMap[recKey][type] = newVal;
 
       updateRowUI(recKey);
       refreshLiveKPIs();
       updateMobileStickyProgress();
       updateFilterCounts();
-      showSyncToast("তথ্য সংরক্ষিত হয়েছে ✓");
+      showSyncToast("তথ্য সংরক্ষিত হয়েছে ✓");
 
-      db.ref('wada_states/' + recKey).set(wadaStateMap[recKey]).catch(err => {
-        showSyncToast("সংরক্ষণ ব্যর্থ! অফলাইন আছেন কি?", false);
+      const upd = {};
+      upd[type] = newVal; // null দিলে ফিল্ডটি মুছে যায় (= বাতিল)
+      upd.updatedBy = actorLabel();
+      upd.updatedAt = firebase.database.ServerValue.TIMESTAMP;
+
+      db.ref('wada_states/' + recKey).update(upd).catch(err => {
+        console.error(err);
+        showSyncToast("সংরক্ষণ ব্যর্থ! ইন্টারনেট/অনুমতি চেক করুন", false);
       });
     }
 
-    // ক্লাউড ডেটাবেজে মন্তব্য (Remarks) সেভ
+    // ক্লাউডে মন্তব্য (Remarks) সেভ
     function updateRemarks(recKey, val) {
+      if (!/^rec_\d+$/.test(recKey)) return;
       if (!wadaStateMap[recKey]) wadaStateMap[recKey] = { open: null, close: null, remarks: '' };
-      const trimmed = String(val).trim();
-      if (wadaStateMap[recKey].remarks === trimmed) return;
+      const trimmed = String(val).trim().slice(0, MAX_REMARK_LEN);
+      if ((wadaStateMap[recKey].remarks || '') === trimmed) return;
 
       wadaStateMap[recKey].remarks = trimmed;
-      showSyncToast("মন্তব্য সংরক্ষিত হয়েছে ✓");
+      showSyncToast("মন্তব্য সংরক্ষিত হয়েছে ✓");
 
-      db.ref('wada_states/' + recKey + '/remarks').set(wadaStateMap[recKey].remarks).catch(err => {
+      db.ref('wada_states/' + recKey).update({
+        remarks: trimmed,
+        updatedBy: actorLabel(),
+        updatedAt: firebase.database.ServerValue.TIMESTAMP
+      }).catch(err => {
+        console.error(err);
         showSyncToast("মন্তব্য সংরক্ষণ ব্যর্থ!", false);
       });
 
       const tableInp = document.getElementById(`rem_table_${recKey}`);
-      if (tableInp && tableInp.value !== wadaStateMap[recKey].remarks) tableInp.value = wadaStateMap[recKey].remarks;
+      if (tableInp && tableInp.value !== trimmed) tableInp.value = trimmed;
 
       const mobInp = document.getElementById(`rem_${recKey}`);
-      if (mobInp && mobInp.value !== wadaStateMap[recKey].remarks) mobInp.value = wadaStateMap[recKey].remarks;
+      if (mobInp && mobInp.value !== trimmed) mobInp.value = trimmed;
     }
 
     function addQuickRemark(recKey, text) {
       const mobInp = document.getElementById(`rem_${recKey}`);
       let current = mobInp ? mobInp.value.trim() : '';
       let updated = current ? `${current}, ${text}` : text;
-      if (mobInp) mobInp.value = updated;
+      if (mobInp) mobInp.value = updated.slice(0, MAX_REMARK_LEN);
       updateRemarks(recKey, updated);
     }
 
-    // Firebase Listeners
-    db.ref('members').on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data && data.length > 0) {
-        rawRecordsData = data;
-        document.getElementById('fileStatusText').innerText = `মোট সদস্য: ${rawRecordsData.length} জন (ক্লাউড সিঙ্কড) 🟢`;
+    // ফায়ারবেসে ফাঁকা index থাকলে ডেটা অবজেক্ট হয়ে আসে; এখানে অ্যারে হিসেবে ঠিক করা হয় (index ঠিক রেখে)
+    function normalizeMembers(data) {
+      if (!data) return [];
+      const blank = () => ({ id: '', name: '', mobile: '', halqa: 'অনির্ধারিত' });
+      if (Array.isArray(data)) return data.map(x => x || blank());
+      const arr = [];
+      Object.keys(data).forEach(k => {
+        const i = parseInt(k, 10);
+        if (!isNaN(i)) arr[i] = data[k];
+      });
+      return Array.from(arr, x => x || blank());
+    }
+
+    // Firebase Listeners (লগইন/অথেন্টিকেশনের পরে একবারই চালু হয়)
+    function startListeners() {
+      if (listenersStarted) return;
+      listenersStarted = true;
+
+      const onErr = (what) => (err) => {
+        console.error(what, err);
+        setStatusText('ডেটা লোড ব্যর্থ (অনুমতি/ইন্টারনেট) 🔴');
+        showSyncToast('ডেটা লোড করা যায়নি', false);
+      };
+
+      db.ref('members').on('value', (snapshot) => {
+        rawRecordsData = normalizeMembers(snapshot.val());
+        setStatusText(`মোট সদস্য: ${rawRecordsData.length} জন (ক্লাউড সিঙ্কড) 🟢`);
         rebuildPagesFromData();
         renderNigranTable();
         renderReportView();
-      }
-    });
+      }, onErr('members'));
 
-    db.ref('wada_states').on('value', (snapshot) => {
-      const val = snapshot.val();
-      if (val) {
-        wadaStateMap = val;
-        Object.keys(wadaStateMap).forEach(k => updateRowUI(k));
+      db.ref('wada_states').on('value', (snapshot) => {
+        wadaStateMap = snapshot.val() || {};
+        const keys = new Set();
+        document.querySelectorAll('[data-reckey]').forEach(el => {
+          const k = el.getAttribute('data-reckey');
+          if (k && !k.startsWith('empty_')) keys.add(k);
+        });
+        Object.keys(wadaStateMap).forEach(k => keys.add(k));
+        keys.forEach(k => updateRowUI(k, true));
+        updatePageSummaryCards();
         refreshLiveKPIs();
         renderReportView();
+        renderNigranTable();
         updateMobileStickyProgress();
         updateFilterCounts();
+        handleCombinedSearchAndFilter();
+      }, onErr('wada_states'));
+
+      db.ref('nigrans').on('value', (snapshot) => {
+        const val = snapshot.val();
+        nigransLoaded = true;
+        if (val) {
+          nigranList = Object.values(val);
+        } else {
+          nigranList = defaultNigranList;
+          if (isAdmin) { // শুধু এডমিনই ডিফল্ট তালিকা লিখতে পারবে
+            const initObj = {};
+            defaultNigranList.forEach(n => initObj[n.id] = n);
+            db.ref('nigrans').set(initObj);
+          }
+        }
+        renderNigranTable();
+        rebuildPagesFromData();
+        renderReportView();
+      }, onErr('nigrans'));
+
+      if (isAdmin) {
+        db.ref('co_admins').on('value', (snapshot) => {
+          const val = snapshot.val();
+          coAdminList = val ? Object.values(val) : [];
+          renderCoAdminTable();
+        }, onErr('co_admins'));
       }
-    });
+    }
 
-    db.ref('nigrans').on('value', (snapshot) => {
-      const val = snapshot.val();
-      if (val) {
-        nigranList = Object.values(val);
-      } else {
-        const initObj = {};
-        defaultNigranList.forEach(n => initObj[n.id] = n);
-        db.ref('nigrans').set(initObj);
-        nigranList = defaultNigranList;
-      }
-      renderNigranTable();
-      rebuildPagesFromData();
-      renderReportView();
-    });
-
-    db.ref('co_admins').on('value', (snapshot) => {
-      const val = snapshot.val();
-      coAdminList = val ? Object.values(val) : [];
-      renderCoAdminTable();
-    });
-
-    function updateRowUI(recKey) {
+    function updateRowUI(recKey, skipSummary) {
       const state = wadaStateMap[recKey] || { open: null, close: null, remarks: '' };
 
       const btnOpenYes = document.getElementById(`btn_${recKey}_open_yes`);
@@ -1000,6 +1199,14 @@
         mCloseNo.className = `mobile-touch-btn ${state.close === 'no' ? 'active-no' : ''}`;
       }
 
+      // অন্য কেউ মন্তব্য বদলালে (এবং এই ঘরে এখন লেখা হচ্ছে না) ঘরটি আপডেট হবে
+      ['rem_table_', 'rem_'].forEach(prefix => {
+        const inp = document.getElementById(prefix + recKey);
+        if (inp && document.activeElement !== inp && inp.value !== (state.remarks || '')) {
+          inp.value = state.remarks || '';
+        }
+      });
+
       // কার্ডের স্টেট অ্যাট্রিবিউট আপডেট (ফিল্টারিং এর জন্য)
       const cardEl = document.getElementById(`card_${recKey}`);
       if (cardEl) {
@@ -1008,7 +1215,7 @@
         cardEl.setAttribute('data-wada-status', hasChoice ? (isConfirmed ? 'confirmed' : 'decided') : 'pending');
       }
 
-      updatePageSummaryCards();
+      if (!skipSummary) updatePageSummaryCards();
     }
 
     function updatePageSummaryCards() {
@@ -1045,14 +1252,13 @@
       document.getElementById('kpiCloseYes').innerText = toBanglaNum(totalCloseYes);
     }
 
-    // মোবাইল স্টিকি মিনি হেডার প্রগ্রেস আপডেট (আপডেট করা হয়েছে)
+    // মোবাইল স্টিকি মিনি হেডার প্রগ্রেস আপডেট
     function updateMobileStickyProgress() {
       const visibleCards = Array.from(document.querySelectorAll('.member-mobile-card'));
       let total = 0;
       let completed = 0;
 
       visibleCards.forEach(c => {
-        // শুধুমাত্র সিলেক্ট করা হালকার কার্ডগুলো গণনা করবে
         const parentGrp = c.closest('.mobile-halqa-group');
         const gHalqa = parentGrp ? parentGrp.getAttribute('data-halqa') : null;
         if (currentSelectedHalqaFilter && !isHalkaMatched(gHalqa, currentSelectedHalqaFilter)) return;
@@ -1066,7 +1272,7 @@
       });
 
       const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-      
+
       const halqaLabel = currentSelectedHalqaFilter ? `📍 হালকা: ${currentSelectedHalqaFilter}` : '📍 সমগ্র তালিকা';
       const stickyHName = document.getElementById('stickyHalqaName');
       const stickyRatio = document.getElementById('stickyCompletionRatio');
@@ -1085,7 +1291,7 @@
       handleCombinedSearchAndFilter();
     }
 
-    // সার্চ এবং মোবাইল ফিল্টার ফাংশন (আপডেট করা হয়েছে)
+    // সার্চ এবং মোবাইল ফিল্টার ফাংশন
     function handleCombinedSearchAndFilter() {
       const query = (document.getElementById('memberSearchInput').value || '').trim().toLowerCase();
 
@@ -1104,23 +1310,18 @@
         card.style.display = (matchesQuery && matchesFilter) ? 'block' : 'none';
       });
 
-      // খালি হওয়া গ্রুপের ডিভাইডার লুকিয়ে ফেলা এবং হালকা ফিল্টার অ্যাপ্লাই করা
+      // খালি হওয়া গ্রুপের ডিভাইডার লুকিয়ে ফেলা এবং হালকা ফিল্টার অ্যাপ্লাই করা
       document.querySelectorAll('.mobile-halqa-group').forEach(grp => {
         const gHalqa = grp.getAttribute('data-halqa');
-        
-        // চেক করা হচ্ছে গ্রুপটি বর্তমানে সিলেক্ট করা হালকার সাথে মিলছে কি না
         const matchesHalqaFilter = !currentSelectedHalqaFilter || isHalkaMatched(gHalqa, currentSelectedHalqaFilter);
-        
         const anyVisible = Array.from(grp.querySelectorAll('.member-mobile-card')).some(c => c.style.display !== 'none');
-        
-        // শুধু তখনই গ্রুপ দেখাবে যখন হালকাও মিলবে এবং ভেতরের কার্ডও ভিজিবল থাকবে
         grp.style.display = (matchesHalqaFilter && anyVisible) ? 'block' : 'none';
       });
 
       updateFilterCounts();
     }
 
-    // চিপ বাটনের কাউন্ট আপডেট (আপডেট করা হয়েছে)
+    // চিপ বাটনের কাউন্ট আপডেট
     function updateFilterCounts() {
       const allCards = Array.from(document.querySelectorAll('.member-mobile-card'));
       let totalCount = 0;
@@ -1128,7 +1329,6 @@
       let confirmedCount = 0;
 
       allCards.forEach(c => {
-        // শুধুমাত্র সিলেক্ট করা হালকার কাউন্ট হিসেব করবে
         const parentGrp = c.closest('.mobile-halqa-group');
         const gHalqa = parentGrp ? parentGrp.getAttribute('data-halqa') : null;
         if (currentSelectedHalqaFilter && !isHalkaMatched(gHalqa, currentSelectedHalqaFilter)) return;
@@ -1153,11 +1353,10 @@
       if (countChipConfirmed) countChipConfirmed.innerText = toBanglaNum(confirmedCount);
     }
 
-    // হালকা ড্রপডাউন পরিবর্তন (আপডেট করা হয়েছে)
+    // হালকা ড্রপডাউন পরিবর্তন
     function applyHalqaFilter(selectedHalqa) {
       currentSelectedHalqaFilter = selectedHalqa ? selectedHalqa.trim() : "";
 
-      // ১. ডেস্কটপ পেজ ফিল্টার
       document.querySelectorAll('#sheetsContainer .page').forEach(pageEl => {
         const pHalqa = pageEl.getAttribute('data-halqa');
         if (!currentSelectedHalqaFilter || isHalkaMatched(pHalqa, currentSelectedHalqaFilter)) {
@@ -1167,7 +1366,6 @@
         }
       });
 
-      // ২. মোবাইল ভিউ আপডেট (handleCombinedSearchAndFilter এখন সব ঠিকমতো হ্যান্ডেল করবে)
       handleCombinedSearchAndFilter();
       updateMobileStickyProgress();
     }
@@ -1184,11 +1382,11 @@
       // ১. ডেস্কটপ A4 শিট রেন্ডার
       pagesToRender.forEach((pageInfo) => {
         const pageData = [...pageInfo.data];
-        while (pageData.length < ROWS_PER_PAGE) pageData.push({ name: '', mobile: '', halqa: '', _empty: true });
+        while (pageData.length < ROWS_PER_PAGE) pageData.push({ id: '', name: '', mobile: '', halqa: '', _empty: true });
 
         const assignedNigran = findNigranForHalqa(pageInfo.halqaName);
-        const nigranDisplayName = assignedNigran 
-          ? `${assignedNigran.name} (${assignedNigran.phone})`
+        const nigranDisplayName = assignedNigran
+          ? `${escapeHtml(assignedNigran.name)} (${escapeHtml(assignedNigran.phone)})`
           : '________________________';
 
         const pageEl = document.createElement('div');
@@ -1198,13 +1396,13 @@
         let rowsHtml = '';
         pageData.forEach((row, index) => {
           const sl = toBanglaNum((pageInfo.halqaPageIndex - 1) * ROWS_PER_PAGE + index + 1);
-          const recKey = row._empty ? `empty_${pageInfo.halqaName}_${index}` : (row._recKey || `rec_${index}`);
+          const recKey = row._empty ? `empty_${globalPageIndex}_${index}` : row._recKey;
           const st = wadaStateMap[recKey] || { open: null, close: null, remarks: '' };
 
           rowsHtml += `
             <tr data-reckey="${recKey}">
               <td>${sl}</td>
-              <td class="cell-name">${row.name || ''}</td>
+              <td class="cell-name">${escapeHtml(row.name)}</td>
               <td class="cell-mobile">${row._empty ? '' : formatPhonesHtml(row.mobile)}</td>
               <td>
                 ${row._empty ? '' : `
@@ -1232,7 +1430,7 @@
               </td>
               <td>
                 ${row._empty ? '' : `
-                  <input type="text" id="rem_table_${recKey}" class="table-remarks-input" value="${st.remarks || ''}" placeholder="মন্তব্য..." onblur="updateRemarks('${recKey}', this.value)">
+                  <input type="text" id="rem_table_${recKey}" class="table-remarks-input" maxlength="${MAX_REMARK_LEN}" value="${escapeHtml(st.remarks || '')}" placeholder="মন্তব্য..." onblur="updateRemarks('${recKey}', this.value)">
                 `}
               </td>
             </tr>
@@ -1252,7 +1450,7 @@
               <div><strong>স্থানঃ</strong> দারুত তবলীগ কমপ্লেক্স</div>
               <div><strong>উদ্বোধনঃ</strong> ৬ নভেম্বর, শুক্রবার সকাল ৯:৩০ টায়</div>
               <div><strong>সমাপনীঃ</strong> ৭ নভেম্বর, শনিবার দুপুর</div>
-              <div><strong>হালকাঃ</strong> ${pageInfo.halqaName}</div>
+              <div><strong>হালকাঃ</strong> ${escapeHtml(pageInfo.halqaName)}</div>
               <div><strong>নিগরানঃ</strong> ${nigranDisplayName}</div>
             </div>
             <table>
@@ -1274,7 +1472,7 @@
             </div>
             <div style="text-align:center; width:180px;">
               <div style="border-top:1px solid #000; margin-bottom:4px;"></div>
-              <div style="font-size:12px; font-weight:bold;">${assignedNigran ? assignedNigran.name : 'নিগরানের স্বাক্ষর'}</div>
+              <div style="font-size:12px; font-weight:bold;">${assignedNigran ? escapeHtml(assignedNigran.name) : 'নিগরানের স্বাক্ষর'}</div>
             </div>
           </div>
         `;
@@ -1290,7 +1488,7 @@
         mobileContainer.innerHTML = `
           <div style="background:#fff; padding:25px; border-radius:12px; text-align:center; margin-top:20px;">
             <h3 style="color:#b91c1c; margin:0 0 8px;">⚠️ কোনো তথ্য পাওয়া যায়নি</h3>
-            <p style="color:#64748b; font-size:13px; margin:0;">কোনো সদস্য লোড হয়নি অথবা আপনার দায়িত্বপ্রাপ্ত হালকার সাথে মিলছে না।</p>
+            <p style="color:#64748b; font-size:13px; margin:0;">কোনো সদস্য লোড হয়নি অথবা আপনার দায়িত্বপ্রাপ্ত হালকার সাথে মিলছে না.</p>
           </div>
         `;
       } else {
@@ -1304,13 +1502,13 @@
           const divider = document.createElement('div');
           divider.className = 'mobile-halqa-divider';
           divider.innerHTML = `
-            <span>🚩 হালকা: ${hName}</span>
+            <span>🚩 হালকা: ${escapeHtml(hName)}</span>
             <span style="font-size:12px; background:rgba(255,255,255,0.25); padding:2px 8px; border-radius:12px;">${toBanglaNum(membersInHalka.length)} জন</span>
           `;
           groupEl.appendChild(divider);
 
           membersInHalka.forEach((row, idx) => {
-            const recKey = row._recKey || `rec_${idx}`;
+            const recKey = row._recKey;
             const st = wadaStateMap[recKey] || { open: null, close: null, remarks: '' };
 
             const hasChoice = (st.open !== null && st.open !== undefined) || (st.close !== null && st.close !== undefined);
@@ -1327,9 +1525,9 @@
               <div class="member-mobile-header">
                 <div>
                   <span style="font-size:12px; color:#64748b; font-weight:bold;">#${toBanglaNum(idx + 1)}</span>
-                  <div class="member-mobile-name">${row.name || 'অজ্ঞাত সদস্য'}</div>
+                  <div class="member-mobile-name">${escapeHtml(row.name) || 'অজ্ঞাত সদস্য'}</div>
                 </div>
-                <span class="member-mobile-halka">${row.halqa || hName}</span>
+                <span class="member-mobile-halka">${escapeHtml(row.halqa || hName)}</span>
               </div>
 
               <div class="mobile-phone-group">
@@ -1368,7 +1566,7 @@
                   <span class="quick-chip" onclick="addQuickRemark('${recKey}', 'অসুস্থ')">+ অসুস্থ</span>
                   <span class="quick-chip" onclick="addQuickRemark('${recKey}', 'বাইরে থাকবেন')">+ বাইরে থাকবেন</span>
                 </div>
-                <input type="text" id="rem_${recKey}" class="mobile-remarks-input" value="${st.remarks || ''}" placeholder="মন্তব্য লিখুন..." onblur="updateRemarks('${recKey}', this.value)">
+                <input type="text" id="rem_${recKey}" class="mobile-remarks-input" maxlength="${MAX_REMARK_LEN}" value="${escapeHtml(st.remarks || '')}" placeholder="মন্তব্য লিখুন..." onblur="updateRemarks('${recKey}', this.value)">
               </div>
             `;
             groupEl.appendChild(card);
@@ -1383,21 +1581,22 @@
       updateMobileStickyProgress();
       updateFilterCounts();
       if (currentSelectedHalqaFilter) applyHalqaFilter(currentSelectedHalqaFilter);
+      else handleCombinedSearchAndFilter();
     }
 
-    // অ্যাডমিন ভিউতে নিগরানের কাজের অগ্রগতি ও হোয়াটসঅ্যাপ মেসেজ পাঠানো
+    // অ্যাডমিন ভিউতে নিগরানের কাজের অগ্রগতি ও হোয়াটসঅ্যাপ মেসেজ পাঠানো
     function renderNigranTable() {
       const tbody = document.getElementById('nigranTableBody');
-      if (!tbody) return;
+      if (!tbody || !isAdmin) return;
       tbody.innerHTML = '';
       const currentOrigin = window.location.origin + window.location.pathname;
 
       nigranList.forEach((n, idx) => {
-        const uniqueLink = `${currentOrigin}?nid=${n.id}`;
+        const uniqueLink = `${currentOrigin}?nid=${encodeURIComponent(n.id)}`;
         const hArr = getHalkasArray(n);
         const halkasText = hArr.length > 0 ? hArr.join(', ') : 'কোনো হালকা নেই';
-        
-        // নিগরানের হালকার সদস্যদের প্রগ্রেস হিসাব
+        const phoneDigits = String(n.phone || '').replace(/[^0-9]/g, '');
+
         let totalAssigned = 0;
         let completedCalls = 0;
         let confirmedYes = 0;
@@ -1418,13 +1617,11 @@
 
         const progressPct = totalAssigned > 0 ? Math.round((completedCalls / totalAssigned) * 100) : 0;
 
-        // নিগরানকে পোর্টাল লিংক পাঠানোর বার্তা
         const portalMsg = encodeURIComponent(
           `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমায় আপনার দায়িত্বপ্রাপ্ত হালকার (${halkasText}) সদস্যদের উপস্থিতি ওয়াদা এন্ট্রি করতে নিচের লিংকে ক্লিক করুন:\n${uniqueLink}`
         );
-        const waPortalUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${portalMsg}`;
+        const waPortalUrl = `https://wa.me/88${phoneDigits}?text=${portalMsg}`;
 
-        // অ্যাডমিন থেকে নিগরানকে কাজের অগ্রগতি রিপোর্ট পাঠানোর বার্তা
         const progressReportMsg = encodeURIComponent(
           `আসসালামু আলাইকুম ${n.name} ভাই,\n৩৯তম বার্ষিক ইজতেমা ২০২৬ এর উপস্থিতি ওয়াদা কালেকশন অগ্রগতি রিপোর্ট:\n\n` +
           `🚩 আপনার হালকা: ${halkasText}\n` +
@@ -1434,16 +1631,16 @@
           `⏳ যোগাযোগ বাকি: ${totalAssigned - completedCalls} জন\n\n` +
           `বাকি সদস্যদের সাথে দ্রুত যোগাযোগ করে ওয়াদা আপডেট করার অনুরোধ জানাচ্ছি। জাযাকাল্লাহ!\n- ইজতেমা সেন্ট্রাল অ্যাডমিন`
         );
-        const waProgressUrl = `https://wa.me/88${n.phone.replace(/[^0-9]/g, '')}?text=${progressReportMsg}`;
+        const waProgressUrl = `https://wa.me/88${phoneDigits}?text=${progressReportMsg}`;
 
-        const halkaChips = hArr.map(h => `<span class="halka-badge-tag">${h}</span>`).join(' ');
+        const halkaChips = hArr.map(h => `<span class="halka-badge-tag">${escapeHtml(h)}</span>`).join(' ');
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="text-align:center; font-weight:bold;">${toBanglaNum(idx + 1)}</td>
-          <td><strong>${n.name}</strong></td>
+          <td><strong>${escapeHtml(n.name)}</strong></td>
           <td>${halkaChips || '<span style="color:#94a3b8;">হালকা নির্ধারিত হয়নি</span>'}</td>
-          <td style="font-family:Arial; font-weight:bold;">${n.phone}</td>
+          <td style="font-family:Arial; font-weight:bold;">${escapeHtml(n.phone)}</td>
           <td>
             <div style="font-size:11.5px; font-weight:bold; display:flex; justify-content:space-between; margin-bottom:3px;">
               <span>${toBanglaNum(completedCalls)}/${toBanglaNum(totalAssigned)} জন</span>
@@ -1454,14 +1651,14 @@
             </div>
           </td>
           <td style="text-align:center;">
-            <a href="${waPortalUrl}" target="_blank" class="btn btn-whatsapp" style="padding:4px 8px; font-size:11px;">📲 পোর্টাল লিঙ্ক</a>
+            <a href="${waPortalUrl}" target="_blank" rel="noopener" class="btn btn-whatsapp" style="padding:4px 8px; font-size:11px;">📲 পোর্টাল লিঙ্ক</a>
           </td>
           <td style="text-align:center;">
-            <a href="${waProgressUrl}" target="_blank" class="btn" style="background:#059669; padding:4px 8px; font-size:11px;">📊 অগ্রগতি পাঠান</a>
+            <a href="${waProgressUrl}" target="_blank" rel="noopener" class="btn" style="background:#059669; padding:4px 8px; font-size:11px;">📊 অগ্রগতি পাঠান</a>
           </td>
           <td style="text-align:center;">
-            <button class="btn btn-upload" style="padding:3px 6px; font-size:11px;" onclick="editNigran('${n.id}')">✏️</button>
-            <button class="btn" style="background:#dc2626; padding:3px 6px; font-size:11px;" onclick="deleteNigran('${n.id}')">🗑️</button>
+            <button class="btn btn-upload" style="padding:3px 6px; font-size:11px;" data-id="${escapeHtml(n.id)}" onclick="editNigran(this.dataset.id)">✏️</button>
+            <button class="btn" style="background:#dc2626; padding:3px 6px; font-size:11px;" data-id="${escapeHtml(n.id)}" onclick="deleteNigran(this.dataset.id)">🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1470,6 +1667,7 @@
 
     function renderCoAdminTable() {
       const tbody = document.getElementById('coAdminTableBody');
+      if (!tbody || !isAdmin) return;
       tbody.innerHTML = '';
       const currentOrigin = window.location.origin + window.location.pathname;
 
@@ -1478,19 +1676,19 @@
         const whatsappMsg = encodeURIComponent(
           `আসসালামু আলাইকুম ${admin.name} ভাই,\nআপনাকে ৩৯তম বার্ষিক ইজতেমার কো-এডমিন (Co-Admin) হিসেবে যুক্ত করা হয়েছে। সেন্ট্রাল সিস্টেম পরিচালনার জন্য এই লিংকে প্রবেশ করুন:\n${adminLink}`
         );
-        const waUrl = `https://wa.me/88${admin.phone.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
+        const waUrl = `https://wa.me/88${String(admin.phone || '').replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="text-align:center; font-weight:bold;">${toBanglaNum(idx + 1)}</td>
-          <td><strong>${admin.name}</strong></td>
-          <td style="font-family:Arial;">${admin.phone}</td>
+          <td><strong>${escapeHtml(admin.name)}</strong></td>
+          <td style="font-family:Arial;">${escapeHtml(admin.phone)}</td>
           <td><span style="background:#ffedd5; color:#c2410c; padding:3px 8px; border-radius:4px; font-size:12px; font-weight:bold;">কো-এডমিন (সম্পূর্ণ এক্সেস)</span></td>
           <td style="text-align:center;">
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">📲 লিঙ্ক পাঠান (WhatsApp)</a>
+            <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-whatsapp">📲 লিঙ্ক পাঠান (WhatsApp)</a>
           </td>
           <td style="text-align:center;">
-            <button class="btn" style="background:#dc2626; padding:3px 8px; font-size:11px;" onclick="deleteCoAdmin('${admin.id}')">🗑️</button>
+            <button class="btn" style="background:#dc2626; padding:3px 8px; font-size:11px;" data-id="${escapeHtml(admin.id)}" onclick="deleteCoAdmin(this.dataset.id)">🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1498,7 +1696,11 @@
     }
 
     // রিপোর্ট টেবিল ও মোবাইল রিপোর্ট কার্ড রেন্ডার
-    function renderReportView(onlyMyHalqa = false) {
+    // onlyMyHalqa: true = শুধু আমার হালকা, false = সার্বিক; আর্গুমেন্ট না দিলে সর্বশেষ নির্বাচিত স্কোপ ব্যবহার হয়
+    function renderReportView(onlyMyHalqa) {
+      if (onlyMyHalqa !== undefined) reportScopeMine = !!onlyMyHalqa;
+      const onlyMine = reportScopeMine;
+
       const tbody = document.getElementById('detailedReportTableBody');
       const tfoot = document.getElementById('detailedReportTableFoot');
       const mobRepContainer = document.getElementById('mobileReportCardsContainer');
@@ -1507,18 +1709,21 @@
       mobRepContainer.innerHTML = '';
 
       const halqaGroups = {};
-      const currentNigran = activeNid ? nigranList.find(n => String(n.id) === String(activeNid)) : null;
+      const currentNigran = getCurrentNigran();
       const myHalkasArr = currentNigran ? getHalkasArray(currentNigran) : [];
+      const invalidNigranLink = !!activeNid && !currentNigran;
 
-      rawRecordsData.forEach((r, idx) => {
-        const h = r.halqa || 'অনির্ধারিত';
-        if (onlyMyHalqa && currentNigran) {
-          const isMine = myHalkasArr.some(target => isHalkaMatched(h, target));
-          if (!isMine) return;
-        }
-        if (!halqaGroups[h]) halqaGroups[h] = [];
-        halqaGroups[h].push({ ...r, _recKey: `rec_${idx}` });
-      });
+      if (!invalidNigranLink) {
+        rawRecordsData.forEach((r, idx) => {
+          const h = r.halqa || 'অনির্ধারিত';
+          if (onlyMine && currentNigran) {
+            const isMine = myHalkasArr.some(target => isHalkaMatched(h, target));
+            if (!isMine) return;
+          }
+          if (!halqaGroups[h]) halqaGroups[h] = [];
+          halqaGroups[h].push({ ...r, _recKey: `rec_${idx}` });
+        });
+      }
 
       let grandTotalMembers = 0, grandOpenYes = 0, grandOpenNo = 0, grandCloseYes = 0, grandCloseNo = 0, grandBothYes = 0;
       const sortedKeys = Object.keys(halqaGroups).sort();
@@ -1545,12 +1750,11 @@
 
         const nigran = findNigranForHalqa(hName);
 
-        // ১. ডেস্কটপ টেবিল রো
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="text-align:center;">${toBanglaNum(idx + 1)}</td>
-          <td><strong>${hName}</strong></td>
-          <td>${nigran ? `${nigran.name} (${nigran.phone})` : '<span style="color:#9ca3af;">অনিযুক্ত</span>'}</td>
+          <td><strong>${escapeHtml(hName)}</strong></td>
+          <td>${nigran ? `${escapeHtml(nigran.name)} (${escapeHtml(nigran.phone)})` : '<span style="color:#9ca3af;">অনিযুক্ত</span>'}</td>
           <td style="text-align:center; font-weight:bold;">${toBanglaNum(list.length)}</td>
           <td style="text-align:center; color:#15803d; font-weight:bold;">${toBanglaNum(hOpenYes)}</td>
           <td style="text-align:center; color:#b91c1c;">${toBanglaNum(hOpenNo)}</td>
@@ -1560,14 +1764,13 @@
         `;
         tbody.appendChild(tr);
 
-        // ২. মোবাইল রিপোর্ট কার্ড
         const card = document.createElement('div');
         card.className = 'halqa-report-card';
         card.innerHTML = `
           <div class="halqa-rep-head">
             <div>
-              <div class="halqa-rep-title">🚩 ${hName}</div>
-              <div style="font-size:12px; color:#64748b; margin-top:2px;">নিগরান: ${nigran ? nigran.name : 'অনিযুক্ত'}</div>
+              <div class="halqa-rep-title">🚩 ${escapeHtml(hName)}</div>
+              <div style="font-size:12px; color:#64748b; margin-top:2px;">নিগরান: ${nigran ? escapeHtml(nigran.name) : 'অনিযুক্ত'}</div>
             </div>
             <span style="background:#e0f2fe; color:#0369a1; font-weight:bold; font-size:13px; padding:3px 9px; border-radius:6px;">
               ${toBanglaNum(list.length)} জন
@@ -1595,7 +1798,6 @@
         mobRepContainer.appendChild(card);
       });
 
-      // সর্বমোট ফুটার
       tfoot.innerHTML = `
         <tr style="background:#0f172a; color:#fff; font-weight:bold;">
           <td colspan="3" style="text-align:right; padding:10px;">সর্বমোট (Grand Total):</td>
@@ -1608,7 +1810,6 @@
         </tr>
       `;
 
-      // KPI কার্ড আপডেট
       document.getElementById('repCardTotal').innerText = `${toBanglaNum(grandTotalMembers)} জন`;
       document.getElementById('repCardHalqaCount').innerText = `${toBanglaNum(sortedKeys.length)} টি হালকা`;
       document.getElementById('repCardOpenYes').innerText = `${toBanglaNum(grandOpenYes)} জন`;
@@ -1647,6 +1848,7 @@
     }
 
     function saveNigranData() {
+      if (!isAdmin) return;
       const id = document.getElementById('editNigranId').value || 'nig_' + Date.now();
       const name = document.getElementById('inputNigranName').value.trim();
       const phone = document.getElementById('inputNigranPhone').value.trim();
@@ -1662,12 +1864,13 @@
 
       db.ref('nigrans/' + id).set(updatedNigran).then(() => {
         closeNigranModal();
-        showSyncToast('নিগরান ও হালকা আপডেট হয়েছে ✓');
-      });
+        showSyncToast('নিগরান ও হালকা আপডেট হয়েছে ✓');
+      }).catch(() => showSyncToast('সংরক্ষণ ব্যর্থ!', false));
     }
 
     function deleteNigran(id) {
-      if (confirm('আপনি কি এই নিগরানকে তালিকা থেকে মুছে ফেলতে চান?')) {
+      if (!isAdmin) return;
+      if (confirm('আপনি কি এই নিগরানকে তালিকা থেকে মুছে ফেলতে চান? (এর পোর্টাল লিংকও বন্ধ হয়ে যাবে)')) {
         db.ref('nigrans/' + id).remove();
       }
     }
@@ -1684,6 +1887,7 @@
     }
 
     function saveCoAdminData() {
+      if (!isAdmin) return;
       const name = document.getElementById('inputCoAdminName').value.trim();
       const phone = document.getElementById('inputCoAdminPhone').value.trim();
       if (!name || !phone) {
@@ -1694,19 +1898,44 @@
       const newAdmin = { id, name, phone, addedAt: new Date().toISOString() };
       db.ref('co_admins/' + id).set(newAdmin).then(() => {
         closeCoAdminModal();
-        showSyncToast('কো-এডমিন সফলভাবে নিযুক্ত করা হয়েছে ✓');
-      });
+        showSyncToast('কো-এডমিন সফলভাবে নিযুক্ত করা হয়েছে ✓');
+      }).catch(() => showSyncToast('সংরক্ষণ ব্যর্থ!', false));
     }
 
     function deleteCoAdmin(id) {
+      if (!isAdmin) return;
       if (confirm('আপনি কি এই কো-এডমিনকে অপসারণ করতে চান?')) {
         db.ref('co_admins/' + id).remove();
       }
     }
 
+    // ---------- Progress overlay helpers ----------
+    function showProgress(title) {
+      document.getElementById('progressTitle').innerText = title;
+      document.getElementById('progressStatus').innerText = 'অনুগ্রহ করে অপেক্ষা করুন...';
+      document.getElementById('progressBarFill').style.width = '0%';
+      document.getElementById('progressPct').innerText = '০%';
+      document.getElementById('progressOverlay').style.display = 'flex';
+    }
+    function setProgress(status, pct) {
+      document.getElementById('progressStatus').innerText = status;
+      document.getElementById('progressBarFill').style.width = pct + '%';
+      document.getElementById('progressPct').innerText = toBanglaNum(Math.round(pct)) + '%';
+    }
+    function hideProgress() {
+      document.getElementById('progressOverlay').style.display = 'none';
+    }
+
     // PDF Actions
     async function capturePageToCanvas(pageEl) {
-      return await html2canvas(pageEl, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      // লুকানো (display:none) পেজ ক্যাপচার করা যায় না, তাই সাময়িকভাবে দেখানো হয়
+      const prevDisplay = pageEl.style.display;
+      pageEl.style.display = 'flex';
+      try {
+        return await html2canvas(pageEl, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      } finally {
+        pageEl.style.display = prevDisplay;
+      }
     }
 
     async function downloadSelectedHalqaPDF() {
@@ -1715,12 +1944,21 @@
       const pages = globalHalqaPagesMap[halqaName];
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
-      for (let i = 0; i < pages.length; i++) {
-        const canvas = await capturePageToCanvas(pages[i]);
-        if (i > 0) pdf.addPage();
-        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      showProgress('হালকা PDF প্রস্তুত হচ্ছে...');
+      try {
+        for (let i = 0; i < pages.length; i++) {
+          setProgress(`পেজ ${toBanglaNum(i + 1)}/${toBanglaNum(pages.length)}`, (i / pages.length) * 100);
+          const canvas = await capturePageToCanvas(pages[i]);
+          if (i > 0) pdf.addPage();
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        }
+        pdf.save(`ওয়াদা_সিট_${sanitizeFileName(halqaName)}.pdf`);
+      } catch (err) {
+        console.error(err);
+        alert('PDF তৈরিতে সমস্যা হয়েছে!');
+      } finally {
+        hideProgress();
       }
-      pdf.save(`ওয়াদা_সিট_${sanitizeFileName(halqaName)}.pdf`);
     }
 
     async function downloadAllHalqasZip() {
@@ -1728,26 +1966,35 @@
       if (hNames.length === 0) return alert('কোনো পেজ নেই!');
       const zip = new JSZip();
       const { jsPDF } = window.jspdf;
-      document.getElementById('progressOverlay').style.display = 'flex';
+      showProgress('ZIP প্রস্তুত হচ্ছে...');
 
-      for (let h = 0; h < hNames.length; h++) {
-        const hName = hNames[h];
-        const pages = globalHalqaPagesMap[hName];
-        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
-        for (let p = 0; p < pages.length; p++) {
-          const canvas = await capturePageToCanvas(pages[p]);
-          if (p > 0) pdf.addPage();
-          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      try {
+        for (let h = 0; h < hNames.length; h++) {
+          const hName = hNames[h];
+          const pages = globalHalqaPagesMap[hName];
+          setProgress(`হালকা: ${hName} (${toBanglaNum(h + 1)}/${toBanglaNum(hNames.length)})`, (h / hNames.length) * 100);
+          const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
+          for (let p = 0; p < pages.length; p++) {
+            const canvas = await capturePageToCanvas(pages[p]);
+            if (p > 0) pdf.addPage();
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+          }
+          zip.file(`ওয়াদা_সিট_${sanitizeFileName(hName)}.pdf`, pdf.output('blob'));
         }
-        zip.file(`ওয়াদা_সিট_${sanitizeFileName(hName)}.pdf`, pdf.output('blob'));
-      }
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(zipBlob);
-      a.download = 'সকল_হালকা_আলাদা_ওয়াদা_সিট_PDFs.zip';
-      a.click();
-      document.getElementById('progressOverlay').style.display = 'none';
+        setProgress('ZIP ফাইল তৈরি হচ্ছে...', 98);
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = 'সকল_হালকা_আলাদা_ওয়াদা_সিট_PDFs.zip';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      } catch (err) {
+        console.error(err);
+        alert('ZIP তৈরিতে সমস্যা হয়েছে!');
+      } finally {
+        hideProgress();
+      }
     }
 
     async function downloadCombinedPDF() {
@@ -1755,18 +2002,29 @@
       if (allPages.length === 0) return alert('কোনো পেজ নেই!');
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
-      for (let i = 0; i < allPages.length; i++) {
-        const canvas = await capturePageToCanvas(allPages[i]);
-        if (i > 0) pdf.addPage();
-        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      showProgress('যৌথ PDF প্রস্তুত হচ্ছে...');
+      try {
+        for (let i = 0; i < allPages.length; i++) {
+          setProgress(`পেজ ${toBanglaNum(i + 1)}/${toBanglaNum(allPages.length)}`, (i / allPages.length) * 100);
+          const canvas = await capturePageToCanvas(allPages[i]);
+          if (i > 0) pdf.addPage();
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        }
+        pdf.save('ইজতেমা_ওয়াদা_সিট_সকল_হালকা_যৌথ.pdf');
+      } catch (err) {
+        console.error(err);
+        alert('PDF তৈরিতে সমস্যা হয়েছে!');
+      } finally {
+        hideProgress();
       }
-      pdf.save('ইজতেমা_ওয়াদা_সিট_সকল_হালকা_যৌথ.pdf');
     }
 
     // কলাম ডিটেকশন
     function smartDetectColumns(records) {
-      if (!records || records.length === 0) return { nameKey: '', mobileKey: '', halqaKey: '' };
+      if (!records || records.length === 0) return { idKey: '', nameKey: '', mobileKey: '', halqaKey: '' };
       const keys = Object.keys(records[0]);
+
+      let idKey = keys.find(k => /^id$/i.test(k.trim())) || keys.find(k => /id|sl/i.test(k)) || keys[0];
 
       const isFather = (k) => /father|f_?name|fname|pita|baba|parent|gardian/i.test(k);
       const isHalqaField = (k) => /halq|halk|hlq|branch|majlis|shakha|হালকা/i.test(k);
@@ -1803,7 +2061,7 @@
       if (!nameKey) nameKey = keys.find(k => k !== mobileKey && k !== halqaKey && !isFather(k)) || keys[0];
       if (!mobileKey) mobileKey = keys.find(k => k !== nameKey && k !== halqaKey && !isFather(k)) || keys[1] || '';
 
-      return { nameKey, mobileKey, halqaKey };
+      return { idKey, nameKey, mobileKey, halqaKey };
     }
 
     // DBF Parser
@@ -1848,36 +2106,40 @@
 
     // পেজ ও গ্রুপ রি-কনস্ট্রাকশন
     function rebuildPagesFromData() {
-      if (!rawRecordsData || rawRecordsData.length === 0) return;
-
       const groups = {};
       const unknownList = [];
 
-      let currentNigran = null;
-      if (activeNid) {
-        currentNigran = nigranList.find(n => String(n.id) === String(activeNid));
-      }
+      const currentNigran = getCurrentNigran();
+      // ভুল/মুছে ফেলা নিগরান লিংক হলে কোনো সদস্যের তথ্য দেখানো হবে না
+      const invalidNigranLink = !!activeNid && !currentNigran;
 
       if (currentNigran) {
         document.body.classList.add('is-nigran-mode');
         const hArr = getHalkasArray(currentNigran);
         document.getElementById('nigranBadgeTitle').innerText = `${currentNigran.name}`;
 
-        // নিগরানের একাধিক হালকা থাকলে ড্রপডাউন প্রস্তুত
         const nigranDropWrap = document.getElementById('nigranHalqaDropdownWrapper');
         const nigranSelect = document.getElementById('nigranHalqaSelect');
         if (hArr.length > 1) {
           nigranDropWrap.style.display = 'block';
-          nigranSelect.innerHTML = `<option value="">সকল হালকা (${hArr.join(', ')})</option>`;
+          const prevVal = nigranSelect.value;
+          nigranSelect.innerHTML = '';
+          const allOpt = document.createElement('option');
+          allOpt.value = '';
+          allOpt.innerText = `সকল হালকা (${hArr.join(', ')})`;
+          nigranSelect.appendChild(allOpt);
           hArr.forEach(h => {
             const opt = document.createElement('option');
             opt.value = h;
             opt.innerText = `হালকা: ${h}`;
             nigranSelect.appendChild(opt);
           });
+          nigranSelect.value = prevVal;
         } else {
           nigranDropWrap.style.display = 'none';
         }
+      } else if (activeNid) {
+        document.getElementById('nigranBadgeTitle').innerText = nigransLoaded ? 'অকার্যকর লিংক' : 'লোড হচ্ছে...';
       } else {
         document.body.classList.remove('is-nigran-mode');
         document.getElementById('nigranHalqaDropdownWrapper').style.display = 'none';
@@ -1885,23 +2147,24 @@
 
       const myHalkas = currentNigran ? getHalkasArray(currentNigran) : [];
 
-      rawRecordsData.forEach((rec, idx) => {
-        const item = { ...rec, _recKey: `rec_${idx}` };
-        const h = rec.halqa || 'অনির্ধারিত';
+      if (!invalidNigranLink) {
+        rawRecordsData.forEach((rec, idx) => {
+          const item = { ...rec, _recKey: `rec_${idx}` };
+          const h = rec.halqa || 'অনির্ধারিত';
 
-        // নিগরান মোডে নিজের হালকা ফিল্টার
-        if (currentNigran) {
-          const isMine = myHalkas.some(target => isHalkaMatched(h, target));
-          if (!isMine) return;
-        }
+          if (currentNigran) {
+            const isMine = myHalkas.some(target => isHalkaMatched(h, target));
+            if (!isMine) return;
+          }
 
-        if (!h || /^(unknown|অজানা|নাই|নেই|-|_)$/i.test(h)) {
-          unknownList.push(item);
-        } else {
-          if (!groups[h]) groups[h] = [];
-          groups[h].push(item);
-        }
-      });
+          if (!h || /^(unknown|অজানা|নাই|নেই|-|_)$/i.test(h)) {
+            unknownList.push(item);
+          } else {
+            if (!groups[h]) groups[h] = [];
+            groups[h].push(item);
+          }
+        });
+      }
 
       let sortedHalqas = Object.keys(groups).sort();
       if (unknownList.length > 0) {
@@ -1911,6 +2174,7 @@
 
       // এডমিন ড্রপডাউন রিফ্রেশ
       const select = document.getElementById('halqaSelect');
+      const prevAdminVal = select.value;
       select.innerHTML = '<option value="">-- সকল হালকা প্রদর্শন --</option>';
       sortedHalqas.forEach(hName => {
         const opt = document.createElement('option');
@@ -1918,6 +2182,7 @@
         opt.innerText = `${hName} (${groups[hName].length} জন)`;
         select.appendChild(opt);
       });
+      if (sortedHalqas.includes(prevAdminVal)) select.value = prevAdminVal;
 
       const pagesToRender = [];
       sortedHalqas.forEach(hName => {
@@ -1936,10 +2201,83 @@
       renderPages(pagesToRender, groups, sortedHalqas);
     }
 
+    // ==========================================
+    // নতুন DBF আপলোডের সময় পুরোনো ওয়াদা নতুন তালিকার সাথে মিলিয়ে রাখার লজিক
+    // (ID → মোবাইল → নাম+হালকা; শুধু একক/ইউনিক মিল গ্রহণযোগ্য, যাতে ভুল মানুষের ওয়াদা না বসে)
+    // ==========================================
+    function cleanPhoneDigits(p) { return String(p || '').replace(/[^0-9]/g, ''); }
+
+    function indexUnique(records, keyFn) {
+      const seen = {}, map = {};
+      records.forEach((r, i) => {
+        const k = keyFn(r);
+        if (!k) return;
+        if (seen[k]) { delete map[k]; return; }
+        seen[k] = true;
+        map[k] = i;
+      });
+      return map;
+    }
+
+    function sanitizeState(st) {
+      const out = {};
+      if (st.open === 'yes' || st.open === 'no') out.open = st.open;
+      if (st.close === 'yes' || st.close === 'no') out.close = st.close;
+      if (st.remarks) out.remarks = String(st.remarks).slice(0, MAX_REMARK_LEN);
+      if (st.updatedBy) out.updatedBy = String(st.updatedBy).slice(0, 100);
+      if (typeof st.updatedAt === 'number') out.updatedAt = st.updatedAt;
+      return out;
+    }
+
+    function hasStateData(st) {
+      return !!st && (st.open === 'yes' || st.open === 'no' || st.close === 'yes' || st.close === 'no' || st.remarks);
+    }
+
+    function buildStateRemap(oldRecords, newRecords, oldStates) {
+      const idKey = r => { const id = String(r.id || '').trim(); return (!id || /^ID_\d+$/.test(id)) ? '' : id; };
+      const mobKey = r => { const m = cleanPhoneDigits(r.mobile); return m.length >= 10 ? m : ''; };
+      const nameKey = r => { const n = normalizeStr(r.name); return n ? n + '|' + normalizeStr(r.halqa) : ''; };
+
+      const oldById = indexUnique(oldRecords, idKey);
+      const oldByMob = indexUnique(oldRecords, mobKey);
+      const oldByName = indexUnique(oldRecords, nameKey);
+      const newById = indexUnique(newRecords, idKey);
+      const newByMob = indexUnique(newRecords, mobKey);
+      const newByName = indexUnique(newRecords, nameKey);
+
+      const used = new Set();
+      const newStates = {};
+      let carried = 0;
+
+      newRecords.forEach((nr, i) => {
+        let j;
+        const ik = idKey(nr), mk = mobKey(nr), nk = nameKey(nr);
+        if (ik && newById[ik] === i && oldById[ik] !== undefined) j = oldById[ik];
+        else if (mk && newByMob[mk] === i && oldByMob[mk] !== undefined) j = oldByMob[mk];
+        else if (nk && newByName[nk] === i && oldByName[nk] !== undefined) j = oldByName[nk];
+
+        if (j !== undefined && !used.has(j)) {
+          const st = oldStates[`rec_${j}`];
+          if (hasStateData(st)) {
+            newStates[`rec_${i}`] = sanitizeState(st);
+            used.add(j);
+            carried++;
+          }
+        }
+      });
+
+      let totalOldWithData = 0;
+      oldRecords.forEach((r, j) => { if (hasStateData(oldStates[`rec_${j}`])) totalOldWithData++; });
+
+      return { newStates, carried, lost: totalOldWithData - carried };
+    }
+
     // এডমিন ফাইল আপলোড হ্যান্ডলার
     document.getElementById('dbfFileInput').addEventListener('change', function(e) {
+      if (!isAdmin) { e.target.value = ''; return; }
       const file = e.target.files[0];
       if (!file) return;
+      const inputEl = e.target;
       const reader = new FileReader();
       reader.onload = function(evt) {
         try {
@@ -1949,22 +2287,186 @@
             return;
           }
 
-          const { nameKey, mobileKey, halqaKey } = smartDetectColumns(raw);
+          const { idKey, nameKey, mobileKey, halqaKey } = smartDetectColumns(raw);
 
-          rawRecordsData = raw.map(r => ({
+          const newRecords = raw.map((r, idx) => ({
+            id: (idKey && r[idKey]) ? String(r[idKey]).trim() : `ID_${idx + 1}`,
             name: r[nameKey] || '',
             mobile: r[mobileKey] || '',
             halqa: halqaKey && r[halqaKey] ? String(r[halqaKey]).trim() : 'অনির্ধারিত'
           }));
 
-          db.ref('members').set(rawRecordsData);
-          showSyncToast(`মোট ${rawRecordsData.length} জন সদস্যের তথ্য আপলোড হয়েছে ✓`);
+          const hadOld = rawRecordsData.length > 0;
+          const oldCountWithData = Object.keys(wadaStateMap).filter(k => hasStateData(wadaStateMap[k])).length;
+
+          const msg = hadOld
+            ? `⚠️ বর্তমানে ক্লাউডে ${rawRecordsData.length} জন সদস্য এবং ${oldCountWithData} জনের ওয়াদা আছে।\n\nনতুন ফাইলে ${newRecords.length} জন সদস্য আছে। আপলোড করলে সদস্য তালিকা বদলে যাবে।\n\nপুরোনো ওয়াদা (হ্যাঁ/না/মন্তব্য) ID → মোবাইল → নাম অনুযায়ী নতুন তালিকার সাথে মিলিয়ে রাখা হবে, এবং আগে স্বয়ংক্রিয়ভাবে একটি ব্যাকআপ ডাউনলোড হবে।\n\nএগিয়ে যাবেন?`
+            : `নতুন ফাইল থেকে ${newRecords.length} জন সদস্য আপলোড করা হবে। এগিয়ে যাবেন?`;
+          if (!confirm(msg)) return;
+
+          if (hadOld) downloadWadaBackup(true);
+
+          const updates = { members: newRecords };
+          let report = '';
+          if (hadOld) {
+            const { newStates, carried, lost } = buildStateRemap(rawRecordsData, newRecords, wadaStateMap);
+            updates.wada_states = Object.keys(newStates).length ? newStates : null;
+            report = `\n${carried} জনের ওয়াদা নতুন তালিকায় মেলানো হয়েছে।` + (lost > 0 ? `\n⚠️ ${lost} জনের ওয়াদা মেলেনি (ব্যাকআপ ফাইলে সংরক্ষিত আছে)।` : '');
+          }
+
+          db.ref().update(updates).then(() => {
+            showSyncToast(`মোট ${newRecords.length} জন সদস্যের তথ্য আপলোড হয়েছে ✓`);
+            if (report) alert('আপলোড সম্পন্ন!' + report);
+          }).catch(err => {
+            console.error(err);
+            alert('আপলোড ব্যর্থ হয়েছে! আপনি এডমিন হিসেবে লগইন আছেন কি না দেখুন।');
+          });
         } catch (err) {
           console.error(err);
           alert('DBF ফাইল প্রসেস করতে সমস্যা হয়েছে!');
+        } finally {
+          inputEl.value = '';
         }
       };
       reader.readAsArrayBuffer(file);
+    });
+
+    // ==========================================
+    // ১. ব্যাকআপ ফাইল (JSON) ডাউনলোড ফাংশন
+    // ==========================================
+    function downloadWadaBackup(silent) {
+      if (!rawRecordsData || rawRecordsData.length === 0) {
+        if (silent !== true) alert('কোনো সদস্যের ডাটা নেই ব্যাকআপ নেওয়ার জন্য! আগে DBF লোড করুন।');
+        return;
+      }
+
+      const backupPayload = {
+        appName: "ijtema-wada-2026",
+        exportTime: new Date().toLocaleString('bn-BD'),
+        totalMembers: rawRecordsData.length,
+        wadaStatesMap: wadaStateMap,
+        records: rawRecordsData.map((rec, idx) => {
+          const recKey = `rec_${idx}`;
+          const st = wadaStateMap[recKey] || { open: null, close: null, remarks: '' };
+          return {
+            id: rec.id || `ID_${idx + 1}`,
+            name: rec.name || '',
+            mobile: rec.mobile || '',
+            halqa: rec.halqa || '',
+            recKey: recKey,
+            open: st.open || null,
+            close: st.close || null,
+            remarks: st.remarks || ''
+          };
+        })
+      };
+
+      const jsonStr = JSON.stringify(backupPayload, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `ijtema_wada_backup_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+      if (silent !== true) showSyncToast("ব্যাকআপ ফাইল সফলভাবে ডাউনলোড হয়েছে ✓");
+    }
+
+    // ==========================================
+    // ২. ব্যাকআপ ফাইল আপলোড ও রিকভারি হ্যান্ডলার
+    // ==========================================
+    document.getElementById('backupFileInput').addEventListener('change', function(e) {
+      if (!isAdmin) { e.target.value = ''; return; }
+      const file = e.target.files[0];
+      if (!file) return;
+      const inputEl = e.target;
+
+      if (!rawRecordsData || rawRecordsData.length === 0) {
+        alert('⚠️ আগে মূল সদস্য তালিকা (.DBF) আপলোড করুন, তারপর ব্যাকআপ ফাইল আপলোড দিয়ে রিকভার করুন!');
+        inputEl.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const backupData = JSON.parse(evt.target.result);
+          if (!backupData || (!backupData.records && !backupData.wadaStatesMap)) {
+            alert('অকার্যকর ব্যাকআপ ফাইল! সঠিক JSON ব্যাকআপ ফাইল নির্বাচন করুন।');
+            return;
+          }
+
+          const backupRecords = backupData.records || [];
+          const backupStates = backupData.wadaStatesMap || {};
+          const restoredStates = {};
+          let restoredCount = 0;
+
+          // Smart Matching: ID (Primary) -> Mobile -> Name + Halqa -> exact key
+          rawRecordsData.forEach((currentMember, idx) => {
+            const curKey = `rec_${idx}`;
+            const curMobileClean = cleanPhoneDigits(currentMember.mobile);
+            const curNameNorm = normalizeStr(currentMember.name);
+            const curHalqaNorm = normalizeStr(currentMember.halqa);
+
+            let matched = null;
+
+            if (currentMember.id && !/^ID_\d+$/.test(String(currentMember.id))) {
+              matched = backupRecords.find(b => b.id && String(b.id) === String(currentMember.id));
+            }
+
+            if (!matched && curMobileClean.length >= 10) {
+              matched = backupRecords.find(b => {
+                const bClean = cleanPhoneDigits(b.mobile);
+                return bClean.length >= 10 && (bClean.includes(curMobileClean) || curMobileClean.includes(bClean));
+              });
+            }
+
+            if (!matched && curNameNorm) {
+              matched = backupRecords.find(b => {
+                return normalizeStr(b.name) === curNameNorm && (!curHalqaNorm || normalizeStr(b.halqa) === curHalqaNorm);
+              });
+            }
+
+            if (!matched && backupStates[curKey]) {
+              matched = backupStates[curKey];
+            }
+
+            if (matched) {
+              const clean = sanitizeState(matched);
+              if (hasStateData(clean)) {
+                restoredStates[curKey] = Object.assign({}, clean);
+                restoredCount++;
+              }
+            }
+          });
+
+          if (restoredCount === 0) {
+            alert('ব্যাকআপ ফাইলের সাথে বর্তমান তালিকার কোনো সদস্য মেলেনি।');
+            return;
+          }
+
+          // বিদ্যমান ডেটা মুছে না ফেলে শুধু ব্যাকআপের এন্ট্রিগুলো মার্জ (update) করা হয়
+          db.ref('wada_states').update(restoredStates).then(() => {
+            showSyncToast(`${toBanglaNum(restoredCount)} জনের ওয়াদা রিকভার হয়েছে ✓`);
+            alert(`সফলভাবে ${restoredCount} জন সদস্যের Yes, No এবং Remarks ডেটা রিকভার সম্পন্ন হয়েছে!`);
+          }).catch(err => {
+            console.error(err);
+            alert('ফায়ারবেসে ডাটা রিকভার সেভ করতে সমস্যা হয়েছে!');
+          });
+
+        } catch (err) {
+          console.error(err);
+          alert('ব্যাকআপ ফাইলটি পার্স করতে সমস্যা হয়েছে! ফাইল ফরম্যাট ঠিক আছে কি না দেখুন।');
+        } finally {
+          inputEl.value = '';
+        }
+      };
+      reader.readAsText(file);
     });
   </script>
 </body>
